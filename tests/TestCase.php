@@ -41,6 +41,7 @@ abstract class TestCase extends Orchestra
         ]);
 
         config()->set('cache.default', 'database');
+        config()->set('cache.prefix', '');
     }
 
     /**

@@ -160,7 +160,7 @@ it('will store cache till end of day', function() {
     createModel();
 
     $cache = DB::table('cache')
-        ->where('key', 'laracache_app_cache_list.day')
+        ->where('key', 'list.day')
         ->first();
 
     expect($cache)->toBeTruthy();
@@ -176,7 +176,7 @@ it('will store cache till end of week', function() {
     createModel();
 
     $cache = DB::table('cache')
-        ->where('key', 'laracache_app_cache_list.week')
+        ->where('key', 'list.week')
         ->first();
 
     expect($cache)->toBeTruthy();
@@ -192,7 +192,7 @@ it('will store cache with ttl', function() {
     createModel();
 
     $cache = DB::table('cache')
-        ->where('key', 'laracache_app_cache_list.ttl')
+        ->where('key', 'list.ttl')
         ->first();
 
     expect($cache)->toBeTruthy();
