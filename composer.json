@@ -48,7 +48,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest"
+        "test": "vendor/bin/pest",
+        "test:ci": "vendor/bin/pest --coverage --coverage-text --coverage-clover=coverage.xml"
     },
     "config": {
         "sort-packages": true,
