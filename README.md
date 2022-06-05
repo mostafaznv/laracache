@@ -1,6 +1,6 @@
 # LaraCache
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/laracahe/Run%20Tests?label=Build&style=flat-square)](https://github.com/mostafaznv/laracahe/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/laracahe/Run%20Tests?label=Build&style=flat-square)](https://github.com/mostafaznv/laracache/actions)
 [![GitHub license](https://img.shields.io/github/license/mostafaznv/laracache?style=flat-square)](https://github.com/mostafaznv/laracache/blob/master/LICENSE)
 [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/laracache.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/laracache)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/mostafaznv/laracache?style=flat-square)](https://packagist.org/packages/mostafaznv/laracache)
