@@ -1,10 +1,11 @@
 # LaraCache
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/laracahe/Run%20Tests?label=Build&style=flat-square)](https://github.com/mostafaznv/laracache/actions)
-[![GitHub license](https://img.shields.io/github/license/mostafaznv/laracache?style=flat-square)](https://github.com/mostafaznv/laracache/blob/master/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/laracache/Run%20Tests?label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/laracache/actions)
+[![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/laracache/master.svg?style=flat-square&logo=codecov)](https://app.codecov.io/gh/mostafaznv/laracache)
 [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/laracache.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/laracache)
-[![Packagist Downloads](https://img.shields.io/packagist/dt/mostafaznv/laracache?style=flat-square)](https://packagist.org/packages/mostafaznv/laracache)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/laracache.svg?style=flat-square)](https://packagist.org/packages/mostafaznv/laracache)
+[![GitHub license](https://img.shields.io/github/license/mostafaznv/laracache?style=flat-square)](https://github.com/mostafaznv/laracache/blob/master/LICENSE)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/mostafaznv/laracache?style=flat-square&logo=packagist)](https://packagist.org/packages/mostafaznv/laracache)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/laracache.svg?style=flat-square&logo=composer)](https://packagist.org/packages/mostafaznv/laracache)
 
 
 Using this package, you can cache your heavy and most used queries.
