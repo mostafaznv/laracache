@@ -163,8 +163,11 @@ it('will store cache till end of day', function() {
         ->where('key', 'laracache_app_cache_list.day')
         ->first();
 
-    expect($cache)->toBeTruthy()
-        ->expiration->toBe(1652831999);
+    expect($cache)->toBeTruthy();
+
+    $expiration = (int)$cache->expiration;
+
+    expect($expiration)->toBe(1652831999);
 });
 
 it('will store cache till end of week', function() {
@@ -176,8 +179,11 @@ it('will store cache till end of week', function() {
         ->where('key', 'laracache_app_cache_list.week')
         ->first();
 
-    expect($cache)->toBeTruthy()
-        ->expiration->toBe(1653177599);
+    expect($cache)->toBeTruthy();
+
+    $expiration = (int)$cache->expiration;
+
+    expect($expiration)->toBe(1653177599);
 });
 
 it('will store cache with ttl', function() {
@@ -189,8 +195,11 @@ it('will store cache with ttl', function() {
         ->where('key', 'laracache_app_cache_list.ttl')
         ->first();
 
-    expect($cache)->toBeTruthy()
-        ->expiration->toBe(1652791534);
+    expect($cache)->toBeTruthy();
+
+    $expiration = (int)$cache->expiration;
+
+    expect($expiration)->toBe(1652791534);
 });
 
 it('will update cache manually', function() {
