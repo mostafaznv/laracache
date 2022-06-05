@@ -20,8 +20,6 @@ Manually updating the cache entities of models after dispatching model events (c
 - PHP 8.0.2 or higher
 - Laravel 8.40.0 or higher
 
-------
-
 
 ## Installation
 
@@ -37,7 +35,6 @@ Manually updating the cache entities of models after dispatching model events (c
 
 3. ##### Done
 
-------
 
 ## Usage
 
@@ -87,7 +84,6 @@ Manually updating the cache entities of models after dispatching model events (c
     // or
     $cache = LaraCache::retrieve(Article::class, 'latest');
     ```
-------
 
 
 ## Table of Contents:
@@ -104,7 +100,6 @@ Manually updating the cache entities of models after dispatching model events (c
     - [Update all Entities](#update-all-entities)
 - [Config Properties](#config-properties)
 
-------
 
 
 ## CacheEntity Methods
@@ -121,8 +116,6 @@ Manually updating the cache entities of models after dispatching model events (c
 | setDefault         | defaultValue (type: `mixed`)           | Specifies default value for the case that cache entity doesn't have any value |
 | cache              | Closure                                | **Main** part of each cache entity. defines cache content                     |
 
-
-------
 
 ## Disable/Enable Cache
 
@@ -153,8 +146,6 @@ Article::enableCache();
 LaraCache::enable(Article::class);
 ```
 
-------
-
 ## Update Cache Manually
 
 Sometimes you want to update cache entities manually.
@@ -182,8 +173,6 @@ Article::updateAllCacheEntities('latest');
 // or 
 LaraCache::updateAll(Article::class, 'latest');
 ```
-
-------
 
 ## Config Properties
 
