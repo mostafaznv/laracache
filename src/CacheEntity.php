@@ -64,6 +64,13 @@ class CacheEntity
     public bool $refreshAfterDelete = true;
 
     /**
+     * Indicate if queries should refresh after restore
+     *
+     * @var bool
+     */
+    public bool $refreshAfterRestore = true;
+
+    /**
      * Specify default value of cache entity
      *
      * @var mixed
@@ -129,6 +136,19 @@ class CacheEntity
     public function refreshAfterDelete(bool $status = true): CacheEntity
     {
         $this->refreshAfterDelete = $status;
+
+        return $this;
+    }
+
+    /**
+     * Specify that the cache should refresh after restore a model instance
+     *
+     * @param bool $status
+     * @return $this
+     */
+    public function refreshAfterRestore(bool $status = true): CacheEntity
+    {
+        $this->refreshAfterRestore = $status;
 
         return $this;
     }

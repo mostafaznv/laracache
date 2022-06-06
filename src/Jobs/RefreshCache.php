@@ -25,7 +25,7 @@ class RefreshCache implements ShouldQueue
     public function handle()
     {
         foreach ($this->model->cacheEntities() as $entity) {
-            $this->model->updateCache($entity->name, $this->event, $entity);
+            $this->model->cache()->update($entity->name, $this->event, $entity);
         }
     }
 }

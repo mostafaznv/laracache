@@ -57,18 +57,18 @@ Manually updating the cache entities of models after dispatching model events (c
          *
          * @return CacheEntity[]
          */
-        public function cacheEntities(): array
+        public static function cacheEntities(): array
         {
             return [
                 CacheEntity::make('list.forever')
                     ->cache(function() {
-                        return TestModel::query()->latest()->get();
+                        return Article::query()->latest()->get();
                     }),
    
                 CacheEntity::make('latest')
                     ->validForRestOfDay()
                     ->cache(function() {
-                        return TestModel::query()->latest()->first();
+                        return Article::query()->latest()->first();
                     })
             ];
         }
@@ -81,7 +81,7 @@ Manually updating the cache entities of models after dispatching model events (c
     use Mostafaznv\LaraCache\Facades\LaraCache;
    
    
-    $cache = Article::retrieveCache('latest');
+    $cache = Article::cache()->get('latest');
     // or
     $cache = LaraCache::retrieve(Article::class, 'latest');
     ```
@@ -100,22 +100,24 @@ Manually updating the cache entities of models after dispatching model events (c
     - [Update an Entity](#update-an-entity)
     - [Update all Entities](#update-all-entities)
 - [Config Properties](#config-properties)
+- [Complete Example](#complete-example)
 
 
 
 ## CacheEntity Methods
 
-| method             | Arguments                              | description                                                                   |
-|--------------------|----------------------------------------|-------------------------------------------------------------------------------|
-| refreshAfterCreate | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after create a record                   |
-| refreshAfterUpdate | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after update a record                   |
-| refreshAfterDelete | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after delete a record                   |
-| forever            |                                        | Specifies that the cache should be valid forever                              |
-| validForRestOfDay  |                                        | Specify that cache entity should be valid till end of day                     |
-| validForRestOfWeek |                                        | Specify that cache entity should be valid till end of week                    |
-| ttl                | seconds (type: `int`)                  | Specifies cache time to live in second                                        |
-| setDefault         | defaultValue (type: `mixed`)           | Specifies default value for the case that cache entity doesn't have any value |
-| cache              | Closure                                | **Main** part of each cache entity. defines cache content                     |
+| method              | Arguments                              | description                                                                   |
+|---------------------|----------------------------------------|-------------------------------------------------------------------------------|
+| refreshAfterCreate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after create a record                   |
+| refreshAfterUpdate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after update a record                   |
+| refreshAfterDelete  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after delete a record                   |
+| refreshAfterRestore | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after restore a record                  |
+| forever             |                                        | Specifies that the cache should be valid forever                              |
+| validForRestOfDay   |                                        | Specify that cache entity should be valid till end of day                     |
+| validForRestOfWeek  |                                        | Specify that cache entity should be valid till end of week                    |
+| ttl                 | seconds (type: `int`)                  | Specifies cache time to live in second                                        |
+| setDefault          | defaultValue (type: `mixed`)           | Specifies default value for the case that cache entity doesn't have any value |
+| cache               | Closure                                | **Main** part of each cache entity. defines cache content                     |
 
 
 ## Disable/Enable Cache
@@ -129,7 +131,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::disableCache();
+Article::cache()->disable();
 // or 
 LaraCache::disable(Article::class);
 ```
@@ -142,7 +144,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::enableCache();
+Article::cache()->enable();
 // or 
 LaraCache::enable(Article::class);
 ```
@@ -158,7 +160,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::updateCache('latest');
+Article::cache()->update('latest');
 // or 
 LaraCache::update(Article::class, 'latest');
 ```
@@ -170,7 +172,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::updateAllCacheEntities('latest');
+Article::cache()->updateAll();
 // or 
 LaraCache::updateAll(Article::class, 'latest');
 ```
@@ -183,6 +185,91 @@ LaraCache::updateAll(Article::class, 'latest');
 | first-day-of-week | integer (default: `0`)   | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
 | last-day-of-week  | integer (default: `6`)   | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
 | queue             | bool (default: `false`)  | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+
+
+## Complete Example
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\LaraCache\Traits\LaraCache;
+
+class Article extends Model
+{
+    use LaraCache;
+    
+    /**
+     * Define Cache Entities Entities
+     *
+     * @return CacheEntity[]
+     */
+    public static function cacheEntities(): array
+    {
+        return [
+            CacheEntity::make('list.forever')
+                ->forever()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.day')
+                ->validForRestOfDay()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.week')
+                ->validForRestOfWeek()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.ttl')
+                ->ttl(120)
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('latest')
+                ->forever()
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-create')
+                ->refreshAfterCreate(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-update')
+                ->refreshAfterUpdate(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-delete')
+                ->refreshAfterDelete(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-restore')
+                ->refreshAfterRestore(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('empty.array')
+                ->setDefault('empty value')
+                ->cache(fn() => []),
+        ];
+    }
+}
+```
+
 
 ------
 

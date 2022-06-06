@@ -42,6 +42,16 @@ it('will set refresh after delete correctly', function() {
     expect($this->entity->refreshAfterDelete)->toBeTrue();
 });
 
+it('will set refresh after restore correctly', function() {
+    expect($this->entity->refreshAfterRestore)->toBeTrue();
+
+    $this->entity->refreshAfterRestore(false);
+    expect($this->entity->refreshAfterRestore)->toBeFalse();
+
+    $this->entity->refreshAfterRestore(true);
+    expect($this->entity->refreshAfterRestore)->toBeTrue();
+});
+
 it('will set forever property correctly', function() {
     $this->entity->validForRestOfDay();
 
