@@ -29,7 +29,7 @@ class Cache
         return config('laracache.driver') ?? config('cache.default');
     }
 
-    private function findCacheEntity(string $name, CacheEntity $entity = null): ?CacheEntity
+    private function findCacheEntity(string $name, ?CacheEntity $entity = null): ?CacheEntity
     {
         if (is_null($entity)) {
             foreach ($this->model::cacheEntities() as $cacheEntity) {
@@ -64,7 +64,7 @@ class Cache
             $driver = $this->driver();
 
             if ($this->entityIsCallable($entity, $event)) {
-                $value = call_user_func($entity->cacheClosure);
+                $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
 
                 if ($entity->forever) {
                     CacheFacade::store($driver)->forever($entity->name, $value);
