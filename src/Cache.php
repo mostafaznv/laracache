@@ -29,7 +29,7 @@ class Cache
         return config('laracache.driver') ?? config('cache.default');
     }
 
-    private function findCacheEntity(string $name, CacheEntity $entity = null): ?CacheEntity
+    private function findCacheEntity(string $name, ?CacheEntity $entity = null): ?CacheEntity
     {
         if (is_null($entity)) {
             foreach ($this->model::cacheEntities() as $cacheEntity) {
