@@ -134,9 +134,9 @@ class Cache
         return $this->retrieve($name);
     }
 
-    public function update(string $name, string $event = '', CacheEntity $entity = null): mixed
+    public function update(string $name): mixed
     {
-        return $this->updateCacheEntity($name, $event, $entity);
+        return $this->updateCacheEntity($name);
     }
 
     public function updateAll(): void
