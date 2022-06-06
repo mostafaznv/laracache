@@ -62,13 +62,13 @@ Manually updating the cache entities of models after dispatching model events (c
             return [
                 CacheEntity::make('list.forever')
                     ->cache(function() {
-                        return TestModel::query()->latest()->get();
+                        return Article::query()->latest()->get();
                     }),
    
                 CacheEntity::make('latest')
                     ->validForRestOfDay()
                     ->cache(function() {
-                        return TestModel::query()->latest()->first();
+                        return Article::query()->latest()->first();
                     })
             ];
         }
@@ -100,6 +100,7 @@ Manually updating the cache entities of models after dispatching model events (c
     - [Update an Entity](#update-an-entity)
     - [Update all Entities](#update-all-entities)
 - [Config Properties](#config-properties)
+- [Complete Example](#complete-example)
 
 
 
@@ -183,6 +184,85 @@ LaraCache::updateAll(Article::class, 'latest');
 | first-day-of-week | integer (default: `0`)   | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
 | last-day-of-week  | integer (default: `6`)   | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
 | queue             | bool (default: `false`)  | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+
+
+## Complete Example
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Mostafaznv\LaraCache\Traits\LaraCache;
+
+class Article extends Model
+{
+    use LaraCache;
+    
+    /**
+     * Define Cache Entities Entities
+     *
+     * @return CacheEntity[]
+     */
+    public static function cacheEntities(): array
+    {
+        return [
+            CacheEntity::make('list.forever')
+                ->forever()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.day')
+                ->validForRestOfDay()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.week')
+                ->validForRestOfWeek()
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('list.ttl')
+                ->ttl(120)
+                ->cache(function() {
+                    return Article::query()->latest()->get();
+                }),
+
+            CacheEntity::make('latest')
+                ->forever()
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-create')
+                ->refreshAfterCreate(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-update')
+                ->refreshAfterUpdate(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-delete')
+                ->refreshAfterDelete(false)
+                ->cache(function() {
+                    return Article::query()->latest()->first();
+                }),
+
+            CacheEntity::make('empty.array')
+                ->setDefault('empty value')
+                ->cache(fn() => []),
+        ];
+    }
+}
+```
+
 
 ------
 
