@@ -74,11 +74,16 @@ it('will create cache after creating record', function() {
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 
+    $hasCache = Cache::has('latest');
+    expect($hasCache)->toBeFalse();
+
     createModel();
 
+    $hasCache = Cache::has('latest');
+    expect($hasCache)->toBeTrue();
+
     $cache = TestModel::cache()->get('latest');
-    expect($cache)->toBeTruthy()
-        ->name->toBe('test-name');
+    expect($cache)->name->toBe('test-name');
 });
 
 it('will update cache after updating record', function() {
@@ -102,6 +107,9 @@ it('will update cache after deleting record', function() {
 
     $model->delete();
 
+    $hasCache = Cache::has('latest');
+    expect($hasCache)->toBeFalse();
+
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 });
@@ -114,10 +122,16 @@ it('will update cache after restoring record', function() {
 
     $model->delete();
 
+    $hasCache = Cache::has('latest');
+    expect($hasCache)->toBeFalse();
+
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 
     $model->restore();
+
+    $hasCache = Cache::has('latest');
+    expect($hasCache)->toBeTrue();
 
     $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
@@ -188,16 +202,17 @@ it('will not restore cache after restoring record if refresh after restore flag 
 });
 
 it('will store cache entity forever', function() {
+    $now = testTime()->freeze();
     $name = 'list.forever';
     createModel();
 
     $cache = TestModel::cache()->get($name);
     expect($cache)->toHaveCount(1);
 
-    testTime()->freeze('2048-05-17 12:43:34');
+    $cache = DB::table('cache')->where('key', $name)->first();
+    $expiration = (int)$cache->expiration;
 
-    $cache = TestModel::cache()->get($name);
-    expect($cache)->toHaveCount(1);
+    expect($expiration > $now->addYears(3)->unix())->toBeTrue();
 });
 
 it('will store cache till end of day', function() {
@@ -205,47 +220,30 @@ it('will store cache till end of day', function() {
 
     createModel();
 
-    $cache = DB::table('cache')
-        ->where('key', 'list.day')
-        ->first();
+    $cache = DB::table('cache')->where('key', 'list.day')->first();
 
-    expect($cache)->toBeTruthy();
-
-    $expiration = (int)$cache->expiration;
-
-    expect($expiration)->toBe(1652831999);
+    expect($cache)->toBeTruthy()
+        ->and((int)$cache->expiration)->toBe(1652831999);
 });
 
 it('will store cache till end of week', function() {
     testTime()->freeze('2022-05-17 12:43:34');
-
     createModel();
 
-    $cache = DB::table('cache')
-        ->where('key', 'list.week')
-        ->first();
+    $cache = DB::table('cache')->where('key', 'list.week')->first();
 
-    expect($cache)->toBeTruthy();
-
-    $expiration = (int)$cache->expiration;
-
-    expect($expiration)->toBe(1653177599);
+    expect($cache)->toBeTruthy()
+        ->and((int)$cache->expiration)->toBe(1653177599);
 });
 
 it('will store cache with ttl', function() {
     testTime()->freeze('2022-05-17 12:43:34');
-
     createModel();
 
-    $cache = DB::table('cache')
-        ->where('key', 'list.ttl')
-        ->first();
+    $cache = DB::table('cache')->where('key', 'list.ttl')->first();
 
-    expect($cache)->toBeTruthy();
-
-    $expiration = (int)$cache->expiration;
-
-    expect($expiration)->toBe(1652791534);
+    expect($cache)->toBeTruthy()
+        ->and((int)$cache->expiration)->toBe(1652791534);
 });
 
 it('will update cache manually', function() {
