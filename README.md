@@ -57,7 +57,7 @@ Manually updating the cache entities of models after dispatching model events (c
          *
          * @return CacheEntity[]
          */
-        public function cacheEntities(): array
+        public static function cacheEntities(): array
         {
             return [
                 CacheEntity::make('list.forever')
@@ -81,7 +81,7 @@ Manually updating the cache entities of models after dispatching model events (c
     use Mostafaznv\LaraCache\Facades\LaraCache;
    
    
-    $cache = Article::retrieveCache('latest');
+    $cache = Article::cache()->get('latest');
     // or
     $cache = LaraCache::retrieve(Article::class, 'latest');
     ```
@@ -129,7 +129,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::disableCache();
+Article::cache()->disable();
 // or 
 LaraCache::disable(Article::class);
 ```
@@ -142,7 +142,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::enableCache();
+Article::cache()->enable();
 // or 
 LaraCache::enable(Article::class);
 ```
@@ -158,7 +158,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::updateCache('latest');
+Article::cache()->update('latest');
 // or 
 LaraCache::update(Article::class, 'latest');
 ```
@@ -170,7 +170,7 @@ use App\Models\Article;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 
 
-Article::updateAllCacheEntities('latest');
+Article::cache()->updateAll();
 // or 
 LaraCache::updateAll(Article::class, 'latest');
 ```

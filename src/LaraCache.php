@@ -16,7 +16,7 @@ class LaraCache
      */
     public function update(mixed $model, string $name, string $event = '', CacheEntity $entity = null): mixed
     {
-        return $model::updateCache($name, $event, $entity);
+        return $model::cache()->update($name, $event, $entity);
     }
 
     /**
@@ -26,7 +26,7 @@ class LaraCache
      */
     public function updateAll(mixed $model): void
     {
-        $model::updateAllCacheEntities();
+        $model::cache()->updateAll();
     }
 
     /**
@@ -39,7 +39,7 @@ class LaraCache
      */
     public function retrieve(mixed $model, string $name): mixed
     {
-        return $model::retrieveCache($name);
+        return $model::cache()->get($name);
     }
 
     /**
@@ -49,7 +49,7 @@ class LaraCache
      */
     public function disable($model): void
     {
-        $model::disableCache();
+        $model::cache()->disable();
     }
 
     /**
@@ -59,6 +59,6 @@ class LaraCache
      */
     public function enable($model): void
     {
-        $model::enableCache();
+        $model::cache()->enable();
     }
 }

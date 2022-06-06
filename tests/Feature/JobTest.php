@@ -19,7 +19,7 @@ it('will update cache through queue', function() {
 
     createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeTruthy()
         ->name->toBe('test-name');
 });

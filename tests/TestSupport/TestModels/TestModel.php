@@ -12,7 +12,7 @@ class TestModel extends Model
 
     protected $guarded = [];
 
-    public function cacheEntities(): array
+    public static function cacheEntities(): array
     {
         return [
             CacheEntity::make('list.forever')

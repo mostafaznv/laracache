@@ -8,17 +8,17 @@ use function Spatie\PestPluginTestTime\testTime;
 it('will throw exception if entity name is not defined during retrieving cache', function() {
     $this->expectException(Exception::class);
 
-    TestModel::retrieveCache('unknown-name');
+    TestModel::cache()->get('unknown-name');
 });
 
 it('will throw exception if entity name is not defined during updating cache', function() {
     $this->expectException(Exception::class);
 
-    TestModel::updateCache('unknown-name');
+    TestModel::cache()->update('unknown-name');
 });
 
 it('will not make cache if cache is disabled', function() {
-    TestModel::disableCache();
+    TestModel::cache()->disable();
 
     $hasCache = Cache::has('latest');
     expect($hasCache)->toBeFalse();
@@ -28,44 +28,44 @@ it('will not make cache if cache is disabled', function() {
     $hasCache = Cache::has('latest');
     expect($hasCache)->toBeFalse();
 
-    TestModel::enableCache();
+    TestModel::cache()->enable();
 });
 
 it('will return default value if cache content is empty', function() {
-    $cache = TestModel::retrieveCache('empty.number');
+    $cache = TestModel::cache()->get('empty.number');
     expect($cache)->toBe('empty value');
 
-    $cache = TestModel::retrieveCache('empty.array');
+    $cache = TestModel::cache()->get('empty.array');
     expect($cache)->toBe('empty value');
 
-    $cache = TestModel::retrieveCache('empty.string');
+    $cache = TestModel::cache()->get('empty.string');
     expect($cache)->toBe('empty value');
 
-    $cache = TestModel::retrieveCache('empty.bool');
+    $cache = TestModel::cache()->get('empty.bool');
     expect($cache)->toBe('empty value');
 
-    $cache = TestModel::retrieveCache('empty.null');
+    $cache = TestModel::cache()->get('empty.null');
     expect($cache)->toBe('empty value');
 });
 
 it('will return content of each entity correctly', function() {
-    $cache = TestModel::retrieveCache('static.number');
+    $cache = TestModel::cache()->get('static.number');
     expect($cache)->toBe(1);
 
-    $cache = TestModel::retrieveCache('static.array');
+    $cache = TestModel::cache()->get('static.array');
     expect($cache)->toBe([1, 2]);
 
-    $cache = TestModel::retrieveCache('static.bool');
+    $cache = TestModel::cache()->get('static.bool');
     expect($cache)->toBeTrue();
 });
 
 it('will create cache after creating record', function() {
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 
     createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeTruthy()
         ->name->toBe('test-name');
 });
@@ -73,25 +73,25 @@ it('will create cache after creating record', function() {
 it('will update cache after updating record', function() {
     $model = createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
     $model->name = 'new-test-name';
     $model->save();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('new-test-name');
 });
 
 it('will update cache after deleting record', function() {
     $model = createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
     $model->delete();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 });
 
@@ -118,13 +118,13 @@ it('will not update cache after updating record if refresh after update flag is 
     $name = 'latest.no-update';
     $model = createModel();
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 
     $model->name = 'new-test-name';
     $model->save();
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 });
 
@@ -132,12 +132,12 @@ it('will not delete cache after deleting record if refresh after delete flag is 
     $name = 'latest.no-delete';
     $model = createModel();
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 
     $model->delete();
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 });
 
@@ -145,12 +145,12 @@ it('will store cache entity forever', function() {
     $name = 'list.forever';
     createModel();
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache)->toHaveCount(1);
 
     testTime()->freeze('2048-05-17 12:43:34');
 
-    $cache = TestModel::retrieveCache($name);
+    $cache = TestModel::cache()->get($name);
     expect($cache)->toHaveCount(1);
 });
 
@@ -205,29 +205,29 @@ it('will store cache with ttl', function() {
 it('will update cache manually', function() {
     $model = createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
     DB::table('test_models')->where('id', $model->id)->update([
         'name' => 'new-test-name'
     ]);
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
-    TestModel::updateCache('latest');
+    TestModel::cache()->update('latest');
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('new-test-name');
 });
 
 it('will update all cache entities manually', function() {
     createModel();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
-    $cache = TestModel::retrieveCache('list.forever');
+    $cache = TestModel::cache()->get('list.forever');
     expect($cache)->toHaveCount(1);
 
     DB::table('test_models')->insert([
@@ -236,17 +236,17 @@ it('will update all cache entities manually', function() {
         'created_at' => now()->addSecond()
     ]);
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
 
-    $cache = TestModel::retrieveCache('list.forever');
+    $cache = TestModel::cache()->get('list.forever');
     expect($cache)->toHaveCount(1);
 
-    TestModel::updateAllCacheEntities();
+    TestModel::cache()->updateAll();
 
-    $cache = TestModel::retrieveCache('latest');
+    $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('new-test-name');
 
-    $cache = TestModel::retrieveCache('list.forever');
+    $cache = TestModel::cache()->get('list.forever');
     expect($cache)->toHaveCount(2);
 });
