@@ -5,6 +5,7 @@ namespace Mostafaznv\LaraCache\Traits;
 use Exception;
 use Mostafaznv\LaraCache\Cache;
 use Mostafaznv\LaraCache\CacheEntity;
+use Mostafaznv\LaraCache\Observers\LaraCacheObserver;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
@@ -20,11 +21,7 @@ trait LaraCache
      */
     public static function bootLaraCache()
     {
-        self::created(fn($model) => $model->cache()->refresh($model, Cache::$created));
-
-        self::updated(fn($model) => $model->cache()->refresh($model, Cache::$updated));
-
-        self::deleted(fn($model) => $model->cache()->refresh($model, Cache::$deleted));
+        self::observe(LaraCacheObserver::class);
     }
 
     /**

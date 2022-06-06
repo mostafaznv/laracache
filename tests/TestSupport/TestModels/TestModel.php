@@ -3,12 +3,13 @@
 namespace Mostafaznv\LaraCache\Tests\TestSupport\TestModels;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 class TestModel extends Model
 {
-    use LaraCache;
+    use LaraCache, SoftDeletes;
 
     protected $guarded = [];
 
@@ -59,6 +60,12 @@ class TestModel extends Model
 
             CacheEntity::make('latest.no-delete')
                 ->refreshAfterDelete(false)
+                ->cache(function() {
+                    return TestModel::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-restore')
+                ->refreshAfterRestore(false)
                 ->cache(function() {
                     return TestModel::query()->latest()->first();
                 }),

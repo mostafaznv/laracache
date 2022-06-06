@@ -11,9 +11,10 @@ use Mostafaznv\LaraCache\Utils\Helpers;
 
 class Cache
 {
-    public static string $created = 'created';
-    public static string $updated = 'updated';
-    public static string $deleted = 'deleted';
+    public static string $created  = 'created';
+    public static string $updated  = 'updated';
+    public static string $deleted  = 'deleted';
+    public static string $restored = 'restored';
 
     private mixed $model;
 
@@ -32,10 +33,8 @@ class Cache
     {
         if (is_null($entity)) {
             foreach ($this->model::cacheEntities() as $cacheEntity) {
-                if ($cacheEntity->name == $name) {
-                    $entity = $cacheEntity;
-
-                    break;
+                if ($cacheEntity->name === $name) {
+                    return $cacheEntity;
                 }
             }
         }
@@ -48,7 +47,8 @@ class Cache
         return $event == ''
             or ($event == self::$created and $entity->refreshAfterCreate)
             or ($event == self::$updated and $entity->refreshAfterUpdate)
-            or ($event == self::$deleted and $entity->refreshAfterDelete);
+            or ($event == self::$deleted and $entity->refreshAfterDelete)
+            or ($event == self::$restored and $entity->refreshAfterRestore);
     }
 
     private function isQueueable(): bool

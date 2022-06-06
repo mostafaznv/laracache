@@ -59,6 +59,17 @@ it('will return content of each entity correctly', function() {
     expect($cache)->toBeTrue();
 });
 
+it('will retrieve cache using laraCache static method', function() {
+    $cache = TestModel::laraCache()->get('static.number');
+    expect($cache)->toBe(1);
+
+    $cache = TestModel::laraCache()->get('static.array');
+    expect($cache)->toBe([1, 2]);
+
+    $cache = TestModel::laraCache()->get('static.bool');
+    expect($cache)->toBeTrue();
+});
+
 it('will create cache after creating record', function() {
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
@@ -93,6 +104,23 @@ it('will update cache after deleting record', function() {
 
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
+});
+
+it('will update cache after restoring record', function() {
+    $model = createModel();
+
+    $cache = TestModel::cache()->get('latest');
+    expect($cache->name)->toBe('test-name');
+
+    $model->delete();
+
+    $cache = TestModel::cache()->get('latest');
+    expect($cache)->toBeNull();
+
+    $model->restore();
+
+    $cache = TestModel::cache()->get('latest');
+    expect($cache->name)->toBe('test-name');
 });
 
 it('will not create cache after creating record if refresh after create flag is false', function() {
@@ -139,6 +167,24 @@ it('will not delete cache after deleting record if refresh after delete flag is 
 
     $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
+});
+
+it('will not restore cache after restoring record if refresh after restore flag is false', function() {
+    $name = 'latest.no-restore';
+    $model = createModel();
+
+    $hasCache = Cache::has($name);
+    expect($hasCache)->toBeTrue();
+
+    $model->delete();
+
+    $hasCache = Cache::has($name);
+    expect($hasCache)->toBeFalse();
+
+    $model->restore();
+
+    $hasCache = Cache::has($name);
+    expect($hasCache)->toBeFalse();
 });
 
 it('will store cache entity forever', function() {
