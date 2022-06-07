@@ -7,11 +7,6 @@
 [![Packagist Downloads](https://img.shields.io/packagist/dt/mostafaznv/laracache?style=flat-square&logo=packagist)](https://packagist.org/packages/mostafaznv/laracache)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/laracache.svg?style=flat-square&logo=composer)](https://packagist.org/packages/mostafaznv/laracache)
 
-<p align="center">
-[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
-</p>
-
-----
 
 Using this package, you can cache your heavy and most used queries.
 
@@ -20,6 +15,15 @@ All you have to do is to define the `CacheEntity` objects in the model and speci
 LaraCache will handle the rest of process automatically. It will create and update cache entities based on ttl that you've defined for each entity.
 
 Manually updating the cache entities of models after dispatching model events (creating, updating and deleting) isn't required, LaraCache manages them in the background and ensures the most up-to-date version of each cache entity.
+
+
+<br>
+<p align="center">
+    <a href="https://mostafaznv.github.io/donate" target="_blank">
+    <img src="https://mostafaznv.github.io/donate/donate.svg" />
+    </a>
+</p>
+
 
 ## Requirements:
 
@@ -274,6 +278,14 @@ class Article extends Model
     }
 }
 ```
+
+
+<br>
+<p align="center">
+    <a href="https://mostafaznv.github.io/donate" target="_blank">
+    <img src="https://mostafaznv.github.io/donate/donate.svg" />
+    </a>
+</p>
 
 
 ------
