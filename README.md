@@ -17,12 +17,13 @@ LaraCache will handle the rest of process automatically. It will create and upda
 Manually updating the cache entities of models after dispatching model events (creating, updating and deleting) isn't required, LaraCache manages them in the background and ensures the most up-to-date version of each cache entity.
 
 
-<br>
-<p align="center">
-    <a href="https://mostafaznv.github.io/donate" target="_blank">
-    <img src="https://mostafaznv.github.io/donate/donate.svg" />
-    </a>
-</p>
+
+----
+🚀 If you find this project interesting, please consider supporting me on the open source journey
+
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+
+----
 
 
 ## Requirements:
@@ -279,16 +280,14 @@ class Article extends Model
 }
 ```
 
+----
+🚀 If you find this project interesting, please consider supporting me on the open source journey
 
-<br>
-<p align="center">
-    <a href="https://mostafaznv.github.io/donate" target="_blank">
-    <img src="https://mostafaznv.github.io/donate/donate.svg" />
-    </a>
-</p>
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+
+----
 
 
-------
 
 ## License
 
