@@ -7,6 +7,11 @@
 [![Packagist Downloads](https://img.shields.io/packagist/dt/mostafaznv/laracache?style=flat-square&logo=packagist)](https://packagist.org/packages/mostafaznv/laracache)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/mostafaznv/laracache.svg?style=flat-square&logo=composer)](https://packagist.org/packages/mostafaznv/laracache)
 
+<p align="center">
+[![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
+</p>
+
+----
 
 Using this package, you can cache your heavy and most used queries.
 
