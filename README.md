@@ -16,6 +16,15 @@ LaraCache will handle the rest of process automatically. It will create and upda
 
 Manually updating the cache entities of models after dispatching model events (creating, updating and deleting) isn't required, LaraCache manages them in the background and ensures the most up-to-date version of each cache entity.
 
+
+<br>
+<p align="center">
+    <a href="https://mostafaznv.github.io/donate" target="_blank">
+    <img src="https://mostafaznv.github.io/donate/donate.svg" />
+    </a>
+</p>
+
+
 ## Requirements:
 
 - PHP 8.0.2 or higher
@@ -269,6 +278,14 @@ class Article extends Model
     }
 }
 ```
+
+
+<br>
+<p align="center">
+    <a href="https://mostafaznv.github.io/donate" target="_blank">
+    <img src="https://mostafaznv.github.io/donate/donate.svg" />
+    </a>
+</p>
 
 
 ------
