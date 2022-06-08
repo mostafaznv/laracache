@@ -56,6 +56,17 @@ class Cache
         return config('laracache.queue') ?? false;
     }
 
+    private function callCacheClosure(CacheEntity $entity, int $ttl): CacheData
+    {
+        $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
+
+        return CacheData::make(
+            status: CacheStatus::CREATED(),
+            ttl: $ttl,
+            value: $value ?: $entity->default
+        );
+    }
+
     private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
@@ -64,31 +75,17 @@ class Cache
             $driver = $this->driver();
 
             if ($this->entityIsCallable($entity, $event)) {
-                $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
-                $value = $value ?: $entity->default;
+                $ttl = $entity->getTtl();
+                $cache = $this->callCacheClosure($entity, $ttl);
 
-                if ($entity->forever) {
-                    $value = CacheData::make(CacheStatus::CREATED(), 0, $value);
-
-                    CacheFacade::store($driver)->forever($entity->name, $value);
+                if (is_null($cache->expiration)) {
+                    CacheFacade::store($driver)->forever($entity->name, $cache);
                 }
                 else {
-                    if ($entity->validForRestOfDay) {
-                        $ttl = day_ending_seconds();
-                    }
-                    else if ($entity->validForRestOfWeek) {
-                        $ttl = week_ending_seconds();
-                    }
-                    else {
-                        $ttl = $entity->ttl;
-                    }
-
-                    $value = CacheData::make(CacheStatus::CREATED(), $ttl, $value);
-
-                    CacheFacade::store($driver)->put($entity->name, $value, $ttl);
+                    CacheFacade::store($driver)->put($entity->name, $cache, $ttl);
                 }
 
-                return $value;
+                return $cache;
             }
             else {
                 return CacheData::fromCache($entity, $driver);

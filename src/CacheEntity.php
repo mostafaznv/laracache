@@ -228,6 +228,28 @@ class CacheEntity
     }
 
     /**
+     * Get TTL
+     *
+     * @return int
+     * @internal
+     */
+    public function getTtl(): int {
+        if ($this->forever) {
+            return 0;
+        }
+
+        if ($this->validForRestOfDay) {
+            return day_ending_seconds();
+        }
+
+        if ($this->validForRestOfWeek) {
+            return week_ending_seconds();
+        }
+
+        return $this->ttl;
+    }
+
+    /**
      * Specify cache closure
      *
      * @param Closure $closure
