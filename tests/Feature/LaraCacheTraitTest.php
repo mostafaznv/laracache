@@ -205,48 +205,42 @@ it('will not restore cache after restoring record if refresh after restore flag 
 });
 
 it('will store cache entity forever', function() {
-    $now = testTime()->freeze();
-    $name = 'list.forever';
     createModel();
 
-    $cache = TestModel::cache()->get($name);
-    expect($cache)->toHaveCount(1);
+    $cache = TestModel::cache()->get('list.forever', true);
 
-    $cache = DB::table('cache')->where('key', $name)->first();
-    $expiration = (int)$cache->expiration;
-
-    expect($expiration > $now->addYears(3)->unix())->toBeTrue();
+    expect($cache->value)->toHaveCount(1)
+        ->and($cache->expiration)->toBeNull();
 });
 
 it('will store cache till end of day', function() {
     testTime()->freeze('2022-05-17 12:43:34');
-
     createModel();
 
-    $cache = DB::table('cache')->where('key', 'list.day')->first();
+    $cache = TestModel::cache()->get('list.day', true);
 
-    expect($cache)->toBeTruthy()
-        ->and((int)$cache->expiration)->toBe(1652831999);
+    expect($cache->value)->toHaveCount(1)
+        ->and($cache->expiration)->toBe(1652831999);
 });
 
 it('will store cache till end of week', function() {
     testTime()->freeze('2022-05-17 12:43:34');
     createModel();
 
-    $cache = DB::table('cache')->where('key', 'list.week')->first();
+    $cache = TestModel::cache()->get('list.week', true);
 
-    expect($cache)->toBeTruthy()
-        ->and((int)$cache->expiration)->toBe(1653177599);
+    expect($cache->value)->toHaveCount(1)
+        ->and($cache->expiration)->toBe(1653177599);
 });
 
 it('will store cache with ttl', function() {
     testTime()->freeze('2022-05-17 12:43:34');
     createModel();
 
-    $cache = DB::table('cache')->where('key', 'list.ttl')->first();
+    $cache = TestModel::cache()->get('list.ttl', true);
 
-    expect($cache)->toBeTruthy()
-        ->and((int)$cache->expiration)->toBe(1652791534);
+    expect($cache->value)->toHaveCount(1)
+        ->and($cache->expiration)->toBe(1652791534);
 });
 
 it('will update cache manually', function() {
