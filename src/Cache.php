@@ -99,17 +99,16 @@ class Cache
     private function retrieve(string $name): CacheData
     {
         $driver = $this->driver();
+        $entity = $this->findCacheEntity($name);
 
-        foreach ($this->model::cacheEntities() as $entity) {
-            if ($entity->name == $name) {
-                $cache = CacheData::fromCache($entity, $driver);
+        if ($entity) {
+            $cache = CacheData::fromCache($entity, $driver);
 
-                if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
-                    return $this->updateCacheEntity($name, '', $entity);
-                }
-
-                return $cache;
+            if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+                return $this->updateCacheEntity($name, '', $entity);
             }
+
+            return $cache;
         }
 
         throw new Exception("Cache entity [$name] not found. please check if [$name] exists in " . $this->model);
