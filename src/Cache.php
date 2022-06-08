@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
-use Mostafaznv\LaraCache\Utils\Helpers;
 
 class Cache
 {
@@ -75,10 +74,10 @@ class Cache
                 }
                 else {
                     if ($entity->validForRestOfDay) {
-                        $ttl = Helpers::timeToEndOfDay();
+                        $ttl = day_ending_seconds();
                     }
                     else if ($entity->validForRestOfWeek) {
-                        $ttl = Helpers::timeToEndOfWeek();
+                        $ttl = week_ending_seconds();
                     }
                     else {
                         $ttl = $entity->ttl;

@@ -40,7 +40,10 @@
     "autoload": {
         "psr-4": {
             "Mostafaznv\\LaraCache\\": "src/"
-        }
+        },
+        "files": [
+            "src/Utils/Helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

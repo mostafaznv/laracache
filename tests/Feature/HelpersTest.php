@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use Mostafaznv\LaraCache\Utils\Helpers;
 use function Spatie\PestPluginTestTime\testTime;
 
 beforeEach(function() {
@@ -10,30 +9,30 @@ beforeEach(function() {
 
 
 it('will calculate time to end of the week in seconds', function() {
-    $timeToEnd = Helpers::timeToEndOfWeek();
+    $timeToEnd = week_ending_seconds();
     expect($timeToEnd)->toBe(386185);
 
-    $timeToEnd = Helpers::timeToEndOfWeek(-20);
+    $timeToEnd = week_ending_seconds(-20);
     expect($timeToEnd)->toBe(386185);
 
-    $timeToEnd = Helpers::timeToEndOfWeek(2);
+    $timeToEnd = week_ending_seconds(2);
     expect($timeToEnd)->toBe(1595785);
 });
 
 it('will calculate time to end of the week when end of week is something custom', function() {
     config()->set('laracache.last-day-of-week', Carbon::FRIDAY);
 
-    $timeToEnd = Helpers::timeToEndOfWeek();
+    $timeToEnd = week_ending_seconds();
     expect($timeToEnd)->toBe(299785);
 });
 
 it('will calculate time to end of the day in seconds', function() {
-    $timeToEnd = Helpers::timeToEndOfDay();
+    $timeToEnd = day_ending_seconds();
     expect($timeToEnd)->toBe(40585);
 
-    $timeToEnd = Helpers::timeToEndOfDay(-20);
+    $timeToEnd = day_ending_seconds(-20);
     expect($timeToEnd)->toBe(40585);
 
-    $timeToEnd = Helpers::timeToEndOfDay(4);
+    $timeToEnd = day_ending_seconds(4);
     expect($timeToEnd)->toBe(386185);
 });
