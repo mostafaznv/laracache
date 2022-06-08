@@ -5,7 +5,8 @@ namespace Mostafaznv\LaraCache;
 use Exception;
 use Illuminate\Support\Facades\Cache as CacheFacade;
 use Illuminate\Database\Eloquent\Model;
-use Mostafaznv\LaraCache\CacheEntity;
+use Mostafaznv\LaraCache\DTOs\CacheData;
+use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Utils\Helpers;
 
@@ -56,7 +57,7 @@ class Cache
         return config('laracache.queue') ?? false;
     }
 
-    private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): mixed
+    private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
 
@@ -65,8 +66,11 @@ class Cache
 
             if ($this->entityIsCallable($entity, $event)) {
                 $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
+                $value = $value ?: $entity->default;
 
                 if ($entity->forever) {
+                    $value = CacheData::make(CacheStatus::CREATED(), 0, $value);
+
                     CacheFacade::store($driver)->forever($entity->name, $value);
                 }
                 else {
@@ -80,13 +84,15 @@ class Cache
                         $ttl = $entity->ttl;
                     }
 
+                    $value = CacheData::make(CacheStatus::CREATED(), $ttl, $value);
+
                     CacheFacade::store($driver)->put($entity->name, $value, $ttl);
                 }
 
                 return $value;
             }
             else {
-                return CacheFacade::store($driver)->get($entity->name, $entity->default);
+                return CacheData::fromCache($entity, $driver);
             }
         }
         else {
@@ -94,20 +100,19 @@ class Cache
         }
     }
 
-    private function retrieve(string $name): mixed
+    private function retrieve(string $name): CacheData
     {
         $driver = $this->driver();
 
         foreach ($this->model::cacheEntities() as $entity) {
             if ($entity->name == $name) {
-                $value = CacheFacade::store($driver)->get($entity->name, $entity->default);
+                $cache = CacheData::fromCache($entity, $driver);
 
-                if ($value) {
-                    return $value;
-                }
-                else {
+                if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
                     return $this->updateCacheEntity($name, '', $entity);
                 }
+
+                return $cache;
             }
         }
 
@@ -129,9 +134,15 @@ class Cache
         }
     }
 
-    public function get(string $name): mixed
+    public function get(string $name, bool $withCacheData = false): mixed
     {
-        return $this->retrieve($name);
+        $cache = $this->retrieve($name);
+
+        if ($withCacheData) {
+            return $cache;
+        }
+
+        return $cache->value;
     }
 
     public function update(string $name): mixed

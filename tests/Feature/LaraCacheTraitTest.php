@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use function Spatie\PestPluginTestTime\testTime;
 
@@ -74,13 +75,13 @@ it('will create cache after creating record', function() {
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeFalse();
+    $cache = Cache::get('latest');
+    expect($cache->value)->toBeNull();
 
     createModel();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeTrue();
+    $cache = Cache::get('latest');
+    expect($cache->value->name)->toBe('test-name');
 
     $cache = TestModel::cache()->get('latest');
     expect($cache)->name->toBe('test-name');
@@ -100,38 +101,40 @@ it('will update cache after updating record', function() {
 });
 
 it('will update cache after deleting record', function() {
+    $name = 'latest';
     $model = createModel();
 
-    $cache = TestModel::cache()->get('latest');
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 
     $model->delete();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeFalse();
+    $cache = Cache::get($name);
+    expect($cache->value)->toBeNull();
 
     $cache = TestModel::cache()->get('latest');
     expect($cache)->toBeNull();
 });
 
 it('will update cache after restoring record', function() {
+    $name = 'latest';
     $model = createModel();
 
-    $cache = TestModel::cache()->get('latest');
+    $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 
     $model->delete();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeFalse();
+    $cache = Cache::get($name);
+    expect($cache->value)->toBeNull();
 
-    $cache = TestModel::cache()->get('latest');
+    $cache = TestModel::cache()->get($name);
     expect($cache)->toBeNull();
 
     $model->restore();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeTrue();
+    $cache = Cache::get($name);
+    expect($cache->value->name)->toBe('test-name');
 
     $cache = TestModel::cache()->get('latest');
     expect($cache->name)->toBe('test-name');
@@ -187,18 +190,18 @@ it('will not restore cache after restoring record if refresh after restore flag 
     $name = 'latest.no-restore';
     $model = createModel();
 
-    $hasCache = Cache::has($name);
-    expect($hasCache)->toBeTrue();
+    $cache = Cache::get($name);
+    expect($cache->value->name)->toBe('test-name');
 
     $model->delete();
 
-    $hasCache = Cache::has($name);
-    expect($hasCache)->toBeFalse();
+    $cache = Cache::get($name);
+    expect($cache->value)->toBeNull();
 
     $model->restore();
 
-    $hasCache = Cache::has($name);
-    expect($hasCache)->toBeFalse();
+    $cache = Cache::get($name);
+    expect($cache->value)->toBeNull();
 });
 
 it('will store cache entity forever', function() {
@@ -293,4 +296,12 @@ it('will update all cache entities manually', function() {
 
     $cache = TestModel::cache()->get('list.forever');
     expect($cache)->toHaveCount(2);
+});
+
+it('will return cache data if with cache data flag is true', function() {
+    createModel();
+
+    $cache = TestModel::cache()->get('latest', true);
+
+    expect($cache)->toBeInstanceOf(CacheData::class);
 });
