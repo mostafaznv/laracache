@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Cache List Key
+    |--------------------------------------------------------------------------
+    |
+    | LaraCache uses a separate list to store name of all entities. using these
+    | keys, we can perform some actions to all entities (such as update or delete them)
+    |
+    */
+
+    'laracache-list' => 'laracache.list',
+
+    /*
+    |--------------------------------------------------------------------------
     | First Day of Week
     |--------------------------------------------------------------------------
     |

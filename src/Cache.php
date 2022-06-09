@@ -17,10 +17,12 @@ class Cache
     public static string $restored = 'restored';
 
     private mixed $model;
+    private string $laracacheListKey;
 
     public function __construct(string $model)
     {
         $this->model = $model;
+        $this->laracacheListKey = config('laracache.laracache-list');
     }
 
 
@@ -67,6 +69,24 @@ class Cache
         );
     }
 
+    private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl, string $driver): void
+    {
+        is_null($cache->expiration)
+            ? CacheFacade::store($driver)->forever($entity->name, $cache)
+            : CacheFacade::store($driver)->put($entity->name, $cache, $ttl);
+
+        $list = CacheFacade::store($driver)->get($this->laracacheListKey);
+
+        if (is_array($list)) {
+            $list[] = $entity->name;
+        }
+        else {
+            $list = [$entity->name];
+        }
+
+        CacheFacade::store($driver)->forever($this->laracacheListKey, $list);
+    }
+
     private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
@@ -77,13 +97,7 @@ class Cache
             if ($this->entityIsCallable($entity, $event)) {
                 $ttl = $entity->getTtl();
                 $cache = $this->callCacheClosure($entity, $ttl);
-
-                if (is_null($cache->expiration)) {
-                    CacheFacade::store($driver)->forever($entity->name, $cache);
-                }
-                else {
-                    CacheFacade::store($driver)->put($entity->name, $cache, $ttl);
-                }
+                $this->storeCache($cache, $entity, $ttl, $driver);
 
                 return $cache;
             }

@@ -12,6 +12,7 @@ use Mostafaznv\LaraCache\CacheEntity;
  * @method static retrieve($model, string $name)
  * @method static void enable($model)
  * @method static void disable($model)
+ * @method static array list()
  *
  * @see \Mostafaznv\LaraCache\LaraCache
  */

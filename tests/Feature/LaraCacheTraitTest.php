@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\LaraCache\DTOs\CacheData;
+use Mostafaznv\LaraCache\Facades\LaraCache;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use function Spatie\PestPluginTestTime\testTime;
 
@@ -298,4 +299,17 @@ it('will return cache data if with cache data flag is true', function() {
     $cache = TestModel::cache()->get('latest', true);
 
     expect($cache)->toBeInstanceOf(CacheData::class);
+});
+
+it('will store all cache entities in laracache.list', function() {
+    $list = LaraCache::list();
+    expect($list)
+        ->toBeArray()
+        ->toHaveCount(0);
+
+    createModel();
+
+    $list = LaraCache::list();
+    expect($list)->toHaveCount(16)
+        ->and($list)->toContain('list.ttl', 'empty.number', 'latest.no-update');
 });

@@ -2,6 +2,8 @@
 
 namespace Mostafaznv\LaraCache;
 
+use Illuminate\Support\Facades\Cache;
+
 class LaraCache
 {
     /**
@@ -60,5 +62,13 @@ class LaraCache
     public function enable($model): void
     {
         $model::cache()->enable();
+    }
+
+    public function list(): array
+    {
+        $laracacheListKey = config('laracache.laracache-list');
+        $driver = config('laracache.driver') ?? config('cache.default');
+
+        return Cache::store($driver)->get($laracacheListKey, []);
     }
 }
