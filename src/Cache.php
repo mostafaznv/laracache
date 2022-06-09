@@ -79,7 +79,11 @@ class Cache
 
         if (is_array($list)) {
             if (isset($list[$this->model]) and is_array($list[$this->model])) {
-                $list[$this->model][] = $name;
+                $key = array_search($name, $list[$this->model]);
+
+                if ($key === false) {
+                    $list[$this->model][] = $name;
+                }
             }
             else {
                 $list[$this->model] = [$name];
