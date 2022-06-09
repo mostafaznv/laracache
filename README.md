@@ -124,6 +124,7 @@ Manually updating the cache entities of models after dispatching model events (c
 
 | method              | Arguments                              | description                                                                   |
 |---------------------|----------------------------------------|-------------------------------------------------------------------------------|
+| setDriver           | driver (type: `string`)                | Specifies custom driver for cache entity                                      |
 | refreshAfterCreate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after create a record                   |
 | refreshAfterUpdate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after update a record                   |
 | refreshAfterDelete  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after delete a record                   |

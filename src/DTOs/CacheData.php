@@ -21,9 +21,9 @@ class CacheData
         return new static($status, $expiration, $value);
     }
 
-    public static function fromCache(CacheEntity $entity, string $driver): self
+    public static function fromCache(CacheEntity $entity): self
     {
-        $value = Cache::store($driver)->get($entity->name, $entity->default);
+        $value = Cache::store($entity->driver)->get($entity->name, $entity->default);
 
         if ($value === $entity->default) {
             return self::make(CacheStatus::NOT_CREATED(), 0, $entity->default);

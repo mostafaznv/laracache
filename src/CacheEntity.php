@@ -14,6 +14,13 @@ class CacheEntity
     public string $name;
 
     /**
+     * Cache Driver (store)
+     *
+     * @var string
+     */
+    public string $driver;
+
+    /**
      * Indicate if cache should exist forever
      *
      * @var bool
@@ -88,6 +95,7 @@ class CacheEntity
     public function __construct(string $name)
     {
         $this->name = $name;
+        $this->driver = config('laracache.driver') ?? config('cache.default');
     }
 
     /**
@@ -99,6 +107,19 @@ class CacheEntity
     public static function make(string $name): CacheEntity
     {
         return new static($name);
+    }
+
+    /**
+     * Specify custom driver for cache entity
+     *
+     * @param string $driver
+     * @return $this
+     */
+    public function setDriver(string $driver): CacheEntity
+    {
+        $this->driver = $driver;
+
+        return $this;
     }
 
     /**
@@ -233,7 +254,8 @@ class CacheEntity
      * @return int
      * @internal
      */
-    public function getTtl(): int {
+    public function getTtl(): int
+    {
         if ($this->forever) {
             return 0;
         }

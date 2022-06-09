@@ -26,11 +26,6 @@ class Cache
     }
 
 
-    private function driver(): ?string
-    {
-        return config('laracache.driver') ?? config('cache.default');
-    }
-
     private function findCacheEntity(string $name, ?CacheEntity $entity = null): ?CacheEntity
     {
         if (is_null($entity)) {
@@ -73,36 +68,36 @@ class Cache
         );
     }
 
-    private function updateCacheEntitiesList(string $name, string $driver): void
+    private function updateCacheEntitiesList(CacheEntity $entity): void
     {
-        $list = CacheFacade::store($driver)->get($this->laracacheListKey);
+        $list = CacheFacade::store($entity->driver)->get($this->laracacheListKey);
 
         if (is_array($list)) {
             if (isset($list[$this->model]) and is_array($list[$this->model])) {
-                if (!in_array($name, $list[$this->model])) {
-                    $list[$this->model][] = $name;
+                if (!in_array($entity->name, $list[$this->model])) {
+                    $list[$this->model][] = $entity->name;
                 }
             }
             else {
-                $list[$this->model] = [$name];
+                $list[$this->model] = [$entity->name];
             }
         }
         else {
             $list = [
-                $this->model => [$name]
+                $this->model => [$entity->name]
             ];
         }
 
-        CacheFacade::store($driver)->forever($this->laracacheListKey, $list);
+        CacheFacade::store($entity->driver)->forever($this->laracacheListKey, $list);
     }
 
-    private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl, string $driver): void
+    private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl): void
     {
         is_null($cache->expiration)
-            ? CacheFacade::store($driver)->forever($entity->name, $cache)
-            : CacheFacade::store($driver)->put($entity->name, $cache, $ttl);
+            ? CacheFacade::store($entity->driver)->forever($entity->name, $cache)
+            : CacheFacade::store($entity->driver)->put($entity->name, $cache, $ttl);
 
-        $this->updateCacheEntitiesList($entity->name, $driver);
+        $this->updateCacheEntitiesList($entity);
     }
 
     private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData
@@ -110,17 +105,15 @@ class Cache
         $entity = $this->findCacheEntity($name, $entity);
 
         if ($entity) {
-            $driver = $this->driver();
-
             if ($this->entityIsCallable($entity, $event)) {
                 $ttl = $entity->getTtl();
                 $cache = $this->callCacheClosure($entity, $ttl);
-                $this->storeCache($cache, $entity, $ttl, $driver);
+                $this->storeCache($cache, $entity, $ttl);
 
                 return $cache;
             }
             else {
-                return CacheData::fromCache($entity, $driver);
+                return CacheData::fromCache($entity);
             }
         }
         else {
@@ -133,10 +126,9 @@ class Cache
         $entity = $this->findCacheEntity($name, $entity);
 
         if ($entity) {
-            $driver = $this->driver();
             $ttl = !$deleteForever ? $entity->getTtl() : 0;
             $cache = $this->callCacheClosure($entity, $ttl, true);
-            $this->storeCache($cache, $entity, $ttl, $driver);
+            $this->storeCache($cache, $entity, $ttl);
 
             return $cache;
         }
@@ -147,11 +139,10 @@ class Cache
 
     private function retrieve(string $name): CacheData
     {
-        $driver = $this->driver();
         $entity = $this->findCacheEntity($name);
 
         if ($entity) {
-            $cache = CacheData::fromCache($entity, $driver);
+            $cache = CacheData::fromCache($entity);
 
             if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
                 return $this->updateCacheEntity($name, '', $entity);
