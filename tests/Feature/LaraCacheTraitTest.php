@@ -389,9 +389,7 @@ it('will return cache data if with cache data flag is true', function() {
 
 it('will store all cache entities in laracache.list', function() {
     $list = LaraCache::list();
-    expect($list)
-        ->toBeArray()
-        ->toHaveCount(0);
+    expect($list)->toBeArray()->toHaveCount(0);
 
     createModel();
 
@@ -399,4 +397,56 @@ it('will store all cache entities in laracache.list', function() {
     expect($list)->toHaveCount(1)
         ->and($list[TestModel::class])->toHaveCount(16)
         ->and($list[TestModel::class])->toContain('list.ttl', 'empty.number', 'latest.no-update');
+});
+
+it('will delete all cache entities of a model', function() {
+    testTime()->freeze('2022-05-17 12:43:34');
+    createModel();
+
+    $weekCache = TestModel::cache()->get('list.week', true);
+    $dayCache = TestModel::cache()->get('list.day', true);
+    $latestCache = TestModel::cache()->get('latest', true);
+
+    expect($weekCache->expiration)->toBe(1653177599)
+        ->and($dayCache->expiration)->toBe(1652831999)
+        ->and($latestCache->expiration)->toBeNull();
+
+    TestModel::cache()->deleteAll();
+
+    $weekCache = TestModel::cache()->get('list.week', true);
+    $dayCache = TestModel::cache()->get('list.day', true);
+    $latestCache = TestModel::cache()->get('latest', true);
+
+    expect($weekCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
+        ->and($weekCache->expiration)->toBe(1653177599)
+        ->and($weekCache->value)->toBeNull()
+        ->and($dayCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
+        ->and($dayCache->expiration)->toBe(1652831999)
+        ->and($dayCache->value)->toBeNull()
+        ->and($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
+        ->and($latestCache->expiration)->toBeNull()
+        ->and($dayCache->value)->toBeNull();
+});
+
+it('will delete all cache entities of a model forever', function() {
+    testTime()->freeze('2022-05-17 12:43:34');
+    createModel();
+
+    $weekCache = TestModel::cache()->get('list.week', true);
+    $dayCache = TestModel::cache()->get('list.day', true);
+    $latestCache = TestModel::cache()->get('latest', true);
+
+    expect($weekCache->expiration)->toBe(1653177599)
+        ->and($dayCache->expiration)->toBe(1652831999)
+        ->and($latestCache->expiration)->toBeNull();
+
+    TestModel::cache()->deleteAll(true);
+
+    $weekCache = TestModel::cache()->get('list.week', true);
+    $dayCache = TestModel::cache()->get('list.day', true);
+    $latestCache = TestModel::cache()->get('latest', true);
+
+    expect($weekCache->expiration)->toBeNull()
+        ->and($dayCache->expiration)->toBeNull()
+        ->and($latestCache->expiration)->toBeNull();
 });

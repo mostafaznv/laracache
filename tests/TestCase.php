@@ -57,5 +57,15 @@ abstract class TestCase extends Orchestra
                 $table->timestamps();
                 $table->softDeletes();
             });
+
+        $app['db']->connection()
+            ->getSchemaBuilder()
+            ->create('test_models_2', function(Blueprint $table) {
+                $table->increments('id');
+                $table->string('name');
+                $table->string('content', 500)->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+            });
     }
 }

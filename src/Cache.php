@@ -207,6 +207,13 @@ class Cache
         return $this->deleteCacheEntity($name, $forever);
     }
 
+    public function deleteAll(bool $forever = false): void
+    {
+        foreach ($this->model::cacheEntities() as $entity) {
+            $this->deleteCacheEntity($entity->name, $forever, $entity);
+        }
+    }
+
     public function disable(): void
     {
         $this->model::$isEnabled = false;

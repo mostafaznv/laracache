@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\Cache;
 
 class LaraCache
 {
+    private string $driver;
+    private string $laracacheListKey;
+
+    public function __construct()
+    {
+        $this->driver = config('laracache.driver') ?? config('cache.default');
+        $this->laracacheListKey = config('laracache.laracache-list');
+    }
+
     /**
      * Update Cache Entity
      *
@@ -42,6 +51,28 @@ class LaraCache
     public function delete(mixed $model, string $name, bool $forever = false): mixed
     {
         return $model::cache()->delete($name, $forever);
+    }
+
+    /**
+     * Delete All Cache Entities
+     *
+     * @param mixed $model
+     * @param bool $forever
+     */
+    public function deleteAll(mixed $model = null, bool $forever = false): void
+    {
+        if ($model) {
+            $model::cache()->deleteAll($forever);
+        }
+        else {
+            $list = Cache::store($this->driver)->get($this->laracacheListKey);
+
+            if (is_array($list)) {
+                foreach ($list as $model => $entities) {
+                    $model::cache()->deleteAll($forever);
+                }
+            }
+        }
     }
 
     /**

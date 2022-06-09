@@ -112,6 +112,9 @@ Manually updating the cache entities of models after dispatching model events (c
 - [Delete Cache Manually](#delete-cache-manually)
     - [Delete an Entity](#delete-an-entity)
     - [Delete an Entity Forever](#delete-an-entity-forever)
+    - [Delete all Model Entities](#delete-all-model-entities)
+    - [Delete all Model Entities Forever](#delete-all-model-entities-forever)
+    - [Delete all LaraCache Entities](#delete-all-laracache-entities)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -225,6 +228,51 @@ LaraCache::delete(Article::class, 'latest', true);
 ```
 
 > Note: Cache Entity will update after creating or updating records in your model
+
+
+### Delete all Model Entities
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+
+Article::cache()->deleteAll();
+// or 
+LaraCache::deleteAll(Article::class);
+```
+
+
+
+### Delete all Model Entities Forever
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+
+Article::cache()->deleteAll(true);
+// or 
+LaraCache::deleteAll(Article::class, true);
+```
+
+
+
+### Delete all LaraCache Entities
+
+This will delete all cache entities that stored using LaraCache (across all models)
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+LaraCache::deleteAll();
+// forever
+LaraCache::deleteAll(forever: true);
+```
+
+
+
 
 ## Config Properties
 
