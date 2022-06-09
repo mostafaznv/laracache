@@ -28,6 +28,13 @@ class CacheEntity
     public bool $forever = true;
 
     /**
+     * Indicates if caching operation should perform in the background or not
+     *
+     * @var bool
+     */
+    public bool $isQueueable;
+
+    /**
      * Indicate if cache should exist till end of day
      *
      * @var bool
@@ -96,6 +103,7 @@ class CacheEntity
     {
         $this->name = $name;
         $this->driver = config('laracache.driver') ?? config('cache.default');
+        $this->isQueueable = config('laracache.queue') ?? false;
     }
 
     /**
@@ -118,6 +126,19 @@ class CacheEntity
     public function setDriver(string $driver): CacheEntity
     {
         $this->driver = $driver;
+
+        return $this;
+    }
+
+    /**
+     * Specify if cache operation should perform in background or not
+     *
+     * @param bool $status
+     * @return $this
+     */
+    public function isQueueable(bool $status = true): CacheEntity
+    {
+        $this->isQueueable = $status;
 
         return $this;
     }

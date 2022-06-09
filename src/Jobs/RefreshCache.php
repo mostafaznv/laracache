@@ -13,19 +13,19 @@ class RefreshCache implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected Model $model;
+    protected Model  $model;
+    protected string $name;
     protected string $event;
 
-    public function __construct(Model $model, string $event)
+    public function __construct(Model $model, string $name, string $event)
     {
         $this->model = $model;
+        $this->name = $name;
         $this->event = $event;
     }
 
     public function handle()
     {
-        foreach ($this->model->cacheEntities() as $entity) {
-            $this->model->cache()->update($entity->name, $this->event, $entity);
-        }
+        $this->model->cache()->update($this->name, $this->event);
     }
 }

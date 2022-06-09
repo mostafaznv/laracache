@@ -122,19 +122,20 @@ Manually updating the cache entities of models after dispatching model events (c
 
 ## CacheEntity Methods
 
-| method              | Arguments                              | description                                                                   |
-|---------------------|----------------------------------------|-------------------------------------------------------------------------------|
-| setDriver           | driver (type: `string`)                | Specifies custom driver for cache entity                                      |
-| refreshAfterCreate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after create a record                   |
-| refreshAfterUpdate  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after update a record                   |
-| refreshAfterDelete  | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after delete a record                   |
-| refreshAfterRestore | status (type: `bool`, default: `true`) | Specifies if the cache should refresh after restore a record                  |
-| forever             |                                        | Specifies that the cache should be valid forever                              |
-| validForRestOfDay   |                                        | Specify that cache entity should be valid till end of day                     |
-| validForRestOfWeek  |                                        | Specify that cache entity should be valid till end of week                    |
-| ttl                 | seconds (type: `int`)                  | Specifies cache time to live in second                                        |
-| setDefault          | defaultValue (type: `mixed`)           | Specifies default value for the case that cache entity doesn't have any value |
-| cache               | Closure                                | **Main** part of each cache entity. defines cache content                     |
+| method               | Arguments                               | description                                                                   |
+|----------------------|-----------------------------------------|-------------------------------------------------------------------------------|
+| setDriver            | driver (type: `string`)                 | Specifies custom driver for cache entity                                      |
+| isQueueable          | status (type: `bool`, default: 'true')  | Specifies if cache operation should perform in the background or not          |
+| refreshAfterCreate   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after create a record                   |
+| refreshAfterUpdate   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after update a record                   |
+| refreshAfterDelete   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after delete a record                   |
+| refreshAfterRestore  | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after restore a record                  |
+| forever              |                                         | Specifies that the cache should be valid forever                              |
+| validForRestOfDay    |                                         | Specify that cache entity should be valid till end of day                     |
+| validForRestOfWeek   |                                         | Specify that cache entity should be valid till end of week                    |
+| ttl                  | seconds (type: `int`)                   | Specifies cache time to live in second                                        |
+| setDefault           | defaultValue (type: `mixed`)            | Specifies default value for the case that cache entity doesn't have any value |
+| cache                | Closure                                 | **Main** part of each cache entity. defines cache content                     |
 
 
 ## Disable/Enable Cache
@@ -309,11 +310,13 @@ class Article extends Model
         return [
             CacheEntity::make('list.forever')
                 ->forever()
+                ->setDriver('redis')
                 ->cache(function() {
                     return Article::query()->latest()->get();
                 }),
 
             CacheEntity::make('list.day')
+                ->isQueueable()
                 ->validForRestOfDay()
                 ->cache(function() {
                     return Article::query()->latest()->get();

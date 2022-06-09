@@ -48,11 +48,6 @@ class Cache
             or ($event == self::$restored and $entity->refreshAfterRestore);
     }
 
-    private function isQueueable(): bool
-    {
-        return config('laracache.queue') ?? false;
-    }
-
     private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
     {
         if ($delete) {
@@ -158,11 +153,11 @@ class Cache
     public function refresh(Model $model, string $event): void
     {
         if ($this->model::$isEnabled) {
-            if ($this->isQueueable()) {
-                RefreshCache::dispatch($model, $event);
-            }
-            else {
-                foreach ($this->model::cacheEntities() as $entity) {
+            foreach ($this->model::cacheEntities() as $entity) {
+                if ($entity->isQueueable) {
+                    RefreshCache::dispatch($model, $entity->name, $event);
+                }
+                else {
                     $this->updateCacheEntity($entity->name, $event, $entity);
                 }
             }

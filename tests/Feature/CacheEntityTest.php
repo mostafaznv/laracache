@@ -28,6 +28,26 @@ it('will set driver if laracache.driver is set', function() {
     expect($entity->driver)->toBe('fake-driver');
 });
 
+it('will set is queueable by default', function() {
+    expect($this->entity->isQueueable)->toBeFalse();
+
+    config()->set('laracache.queue', true);
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->isQueueable)->toBeTrue();
+});
+
+it('will set custom queue status', function() {
+    expect($this->entity->isQueueable)->toBeFalse();
+
+    $this->entity->isQueueable();
+    expect($this->entity->isQueueable)->toBeTrue();
+
+    $this->entity->isQueueable(false);
+    expect($this->entity->isQueueable)->toBeFalse();
+});
+
 it('will set specific driver for entity', function() {
     expect($this->entity->driver)->toBe('array');
 
