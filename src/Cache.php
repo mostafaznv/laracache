@@ -16,7 +16,7 @@ class Cache
     public static string $deleted  = 'deleted';
     public static string $restored = 'restored';
 
-    private mixed $model;
+    private mixed  $model;
     private string $laracacheListKey;
 
     public function __construct(string $model)
@@ -69,22 +69,34 @@ class Cache
         );
     }
 
+    private function updateCacheEntitiesList(string $name, string $driver): void
+    {
+        $list = CacheFacade::store($driver)->get($this->laracacheListKey);
+
+        if (is_array($list)) {
+            if (isset($list[$this->model]) and is_array($list[$this->model])) {
+                $list[$this->model][] = $name;
+            }
+            else {
+                $list[$this->model] = [$name];
+            }
+        }
+        else {
+            $list = [
+                $this->model => [$name]
+            ];
+        }
+
+        CacheFacade::store($driver)->forever($this->laracacheListKey, $list);
+    }
+
     private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl, string $driver): void
     {
         is_null($cache->expiration)
             ? CacheFacade::store($driver)->forever($entity->name, $cache)
             : CacheFacade::store($driver)->put($entity->name, $cache, $ttl);
 
-        $list = CacheFacade::store($driver)->get($this->laracacheListKey);
-
-        if (is_array($list)) {
-            $list[] = $entity->name;
-        }
-        else {
-            $list = [$entity->name];
-        }
-
-        CacheFacade::store($driver)->forever($this->laracacheListKey, $list);
+        $this->updateCacheEntitiesList($entity->name, $driver);
     }
 
     private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData

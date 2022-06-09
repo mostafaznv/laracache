@@ -310,6 +310,7 @@ it('will store all cache entities in laracache.list', function() {
     createModel();
 
     $list = LaraCache::list();
-    expect($list)->toHaveCount(16)
-        ->and($list)->toContain('list.ttl', 'empty.number', 'latest.no-update');
+    expect($list)->toHaveCount(1)
+        ->and($list[TestModel::class])->toHaveCount(16)
+        ->and($list[TestModel::class])->toContain('list.ttl', 'empty.number', 'latest.no-update');
 });
