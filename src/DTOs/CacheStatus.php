@@ -6,6 +6,7 @@ namespace Mostafaznv\LaraCache\DTOs;
  * @method static self NOT_CREATED()
  * @method static self CREATING()
  * @method static self CREATED()
+ * @method static self DELETED()
  */
 class CacheStatus
 {

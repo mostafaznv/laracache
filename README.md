@@ -109,6 +109,9 @@ Manually updating the cache entities of models after dispatching model events (c
 - [Update Cache Manually](#update-cache-manually)
     - [Update an Entity](#update-an-entity)
     - [Update all Entities](#update-all-entities)
+- [Delete Cache Manually](#delete-cache-manually)
+    - [Delete an Entity](#delete-an-entity)
+    - [Delete an Entity Forever](#delete-an-entity-forever)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -186,6 +189,42 @@ Article::cache()->updateAll();
 // or 
 LaraCache::updateAll(Article::class, 'latest');
 ```
+
+## Delete Cache Manually
+
+Sometimes you want to delete cache entities manually. using these methods, you can do it.
+
+### Delete an Entity
+
+Using this feature, you can delete cache entities temporary. after spending ttl, cache entity will be generated again.
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+
+Article::cache()->delete('latest');
+// or 
+LaraCache::delete(Article::class, 'latest');
+```
+
+### Delete an Entity Forever
+
+Using this feature, you can delete cache entities permanently. Cache item will be deleted forever and whenever you try to retrieve it, you will get null (or default value).
+
+
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+
+Article::cache()->delete('latest', true);
+// or 
+LaraCache::delete(Article::class, 'latest', true);
+```
+
+> Note: Cache Entity will update after creating or updating records in your model
 
 ## Config Properties
 

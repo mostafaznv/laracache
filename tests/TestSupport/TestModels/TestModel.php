@@ -91,6 +91,7 @@ class TestModel extends Model
                 ->cache(fn() => null),
 
             CacheEntity::make('static.number')
+                ->setDefault('default-value')
                 ->cache(fn() => 1),
 
             CacheEntity::make('static.array')

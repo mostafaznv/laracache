@@ -58,8 +58,12 @@ class Cache
         return config('laracache.queue') ?? false;
     }
 
-    private function callCacheClosure(CacheEntity $entity, int $ttl): CacheData
+    private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
     {
+        if ($delete) {
+            return CacheData::make(CacheStatus::DELETED(), $ttl, $entity->default);
+        }
+
         $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
 
         return CacheData::make(
@@ -122,6 +126,23 @@ class Cache
         }
     }
 
+    private function deleteCacheEntity(string $name, bool $deleteForever = false, CacheEntity $entity = null): CacheData
+    {
+        $entity = $this->findCacheEntity($name, $entity);
+
+        if ($entity) {
+            $driver = $this->driver();
+            $ttl = !$deleteForever ? $entity->getTtl() : 0;
+            $cache = $this->callCacheClosure($entity, $ttl, true);
+            $this->storeCache($cache, $entity, $ttl, $driver);
+
+            return $cache;
+        }
+        else {
+            throw new Exception("Cache entity [$name] not found. please check if [$name] exists in " . $this->model);
+        }
+    }
+
     private function retrieve(string $name): CacheData
     {
         $driver = $this->driver();
@@ -166,7 +187,7 @@ class Cache
         return $cache->value;
     }
 
-    public function update(string $name): mixed
+    public function update(string $name): CacheData
     {
         return $this->updateCacheEntity($name);
     }
@@ -179,6 +200,11 @@ class Cache
                 entity: $entity
             );
         }
+    }
+
+    public function delete(string $name, bool $forever = false): CacheData
+    {
+        return $this->deleteCacheEntity($name, $forever);
     }
 
     public function disable(): void

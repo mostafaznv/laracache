@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class LaraCache
 {
     /**
-     * Update Cache
+     * Update Cache Entity
      *
      * @param mixed $model
      * @param string $name
@@ -32,16 +32,29 @@ class LaraCache
     }
 
     /**
+     * Delete Cache Entity
+     *
+     * @param mixed $model
+     * @param string $name
+     * @param bool $forever
+     * @return mixed
+     */
+    public function delete(mixed $model, string $name, bool $forever = false): mixed
+    {
+        return $model::cache()->delete($name, $forever);
+    }
+
+    /**
      * Retrieve Cache
      *
      * @param mixed $model
      * @param string $name
-     *
+     * @param bool $withCacheData
      * @return mixed
      */
-    public function retrieve(mixed $model, string $name): mixed
+    public function retrieve(mixed $model, string $name, bool $withCacheData = false): mixed
     {
-        return $model::cache()->get($name);
+        return $model::cache()->get($name, $withCacheData);
     }
 
     /**
@@ -64,6 +77,11 @@ class LaraCache
         $model::cache()->enable();
     }
 
+    /**
+     * Retrieve List of All Cache Entities
+     *
+     * @return array
+     */
     public function list(): array
     {
         $laracacheListKey = config('laracache.laracache-list');
