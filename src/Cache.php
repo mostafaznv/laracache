@@ -2,167 +2,14 @@
 
 namespace Mostafaznv\LaraCache;
 
-use Exception;
-use Illuminate\Support\Facades\Cache as CacheFacade;
-use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\LaraCache\DTOs\CacheData;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\DTOs\CacheEvent;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
+use Mostafaznv\LaraCache\Traits\InteractsWithCache;
 
 class Cache
 {
-    public static string $created  = 'created';
-    public static string $updated  = 'updated';
-    public static string $deleted  = 'deleted';
-    public static string $restored = 'restored';
-
-    private mixed  $model;
-    private string $laracacheListKey;
-
-    public function __construct(string $model)
-    {
-        $this->model = $model;
-        $this->laracacheListKey = config('laracache.laracache-list');
-    }
-
-
-    private function findCacheEntity(string $name, ?CacheEntity $entity = null): ?CacheEntity
-    {
-        if (is_null($entity)) {
-            foreach ($this->model::cacheEntities() as $cacheEntity) {
-                if ($cacheEntity->name === $name) {
-                    return $cacheEntity;
-                }
-            }
-        }
-
-        return $entity;
-    }
-
-    private function entityIsCallable(CacheEntity $entity, string $event = ''): bool
-    {
-        return $event == ''
-            or ($event == self::$created and $entity->refreshAfterCreate)
-            or ($event == self::$updated and $entity->refreshAfterUpdate)
-            or ($event == self::$deleted and $entity->refreshAfterDelete)
-            or ($event == self::$restored and $entity->refreshAfterRestore);
-    }
-
-    private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
-    {
-        if ($delete) {
-            return CacheData::make(CacheStatus::DELETED(), $ttl, $entity->default);
-        }
-
-        $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
-
-        return CacheData::make(
-            status: CacheStatus::CREATED(),
-            ttl: $ttl,
-            value: $value ?: $entity->default
-        );
-    }
-
-    private function updateCacheEntitiesList(CacheEntity $entity): void
-    {
-        $list = CacheFacade::store($entity->driver)->get($this->laracacheListKey);
-
-        if (is_array($list)) {
-            if (isset($list[$this->model]) and is_array($list[$this->model])) {
-                if (!in_array($entity->name, $list[$this->model])) {
-                    $list[$this->model][] = $entity->name;
-                }
-            }
-            else {
-                $list[$this->model] = [$entity->name];
-            }
-        }
-        else {
-            $list = [
-                $this->model => [$entity->name]
-            ];
-        }
-
-        CacheFacade::store($entity->driver)->forever($this->laracacheListKey, $list);
-    }
-
-    private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl): void
-    {
-        is_null($cache->expiration)
-            ? CacheFacade::store($entity->driver)->forever($entity->name, $cache)
-            : CacheFacade::store($entity->driver)->put($entity->name, $cache, $ttl);
-
-        $this->updateCacheEntitiesList($entity);
-    }
-
-    private function updateCacheEntity(string $name, string $event = '', CacheEntity $entity = null): CacheData
-    {
-        $entity = $this->findCacheEntity($name, $entity);
-
-        if ($entity) {
-            if ($this->entityIsCallable($entity, $event)) {
-                $ttl = $entity->getTtl();
-                $cache = $this->callCacheClosure($entity, $ttl);
-                $this->storeCache($cache, $entity, $ttl);
-
-                return $cache;
-            }
-            else {
-                return CacheData::fromCache($entity);
-            }
-        }
-        else {
-            throw new Exception("Cache entity [$name] not found. please check if [$name] exists in " . $this->model);
-        }
-    }
-
-    private function deleteCacheEntity(string $name, bool $deleteForever = false, CacheEntity $entity = null): CacheData
-    {
-        $entity = $this->findCacheEntity($name, $entity);
-
-        if ($entity) {
-            $ttl = !$deleteForever ? $entity->getTtl() : 0;
-            $cache = $this->callCacheClosure($entity, $ttl, true);
-            $this->storeCache($cache, $entity, $ttl);
-
-            return $cache;
-        }
-        else {
-            throw new Exception("Cache entity [$name] not found. please check if [$name] exists in " . $this->model);
-        }
-    }
-
-    private function retrieve(string $name): CacheData
-    {
-        $entity = $this->findCacheEntity($name);
-
-        if ($entity) {
-            $cache = CacheData::fromCache($entity);
-
-            if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
-                return $this->updateCacheEntity($name, '', $entity);
-            }
-
-            return $cache;
-        }
-
-        throw new Exception("Cache entity [$name] not found. please check if [$name] exists in " . $this->model);
-    }
-
-
-    public function refresh(Model $model, string $event): void
-    {
-        if ($this->model::$isEnabled) {
-            foreach ($this->model::cacheEntities() as $entity) {
-                if ($entity->isQueueable) {
-                    RefreshCache::dispatch($model, $entity->name, $event);
-                }
-                else {
-                    $this->updateCacheEntity($entity->name, $event, $entity);
-                }
-            }
-        }
-    }
+    use InteractsWithCache;
 
     public function get(string $name, bool $withCacheData = false): mixed
     {
@@ -199,6 +46,20 @@ class Cache
     {
         foreach ($this->model::cacheEntities() as $entity) {
             $this->deleteCacheEntity($entity->name, $forever, $entity);
+        }
+    }
+
+    public function refresh(CacheEvent $event): void
+    {
+        if ($this->model::$isEnabled) {
+            foreach ($this->model::cacheEntities() as $entity) {
+                if ($entity->isQueueable) {
+                    RefreshCache::dispatch($this->model, $entity->name, $event);
+                }
+                else {
+                    $this->updateCacheEntity($entity->name, $event, $entity);
+                }
+            }
         }
     }
 

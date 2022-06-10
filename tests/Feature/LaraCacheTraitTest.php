@@ -4,18 +4,19 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use function Spatie\PestPluginTestTime\testTime;
 
 it('will throw exception if entity name is not defined during retrieving cache', function() {
-    $this->expectException(Exception::class);
+    $this->expectException(CacheEntityDoesNotExist::class);
 
     TestModel::cache()->get('unknown-name');
 });
 
 it('will throw exception if entity name is not defined during updating cache', function() {
-    $this->expectException(Exception::class);
+    $this->expectException(CacheEntityDoesNotExist::class);
 
     TestModel::cache()->update('unknown-name');
 });
@@ -295,7 +296,7 @@ it('will update all cache entities manually', function() {
 });
 
 it('will throw exception if entity name is not defined during deleting cache', function() {
-    $this->expectException(Exception::class);
+    $this->expectException(CacheEntityDoesNotExist::class);
 
     TestModel::cache()->delete('unknown-name');
 });
