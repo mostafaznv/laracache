@@ -23,10 +23,10 @@ it('will update cache through queue', function() {
 
     createModel();
 
-    $hasCache = Cache::has('latest');
-    expect($hasCache)->toBeTrue();
+    $hasLatestCache = Cache::has('latest');
+    $latestCache = TestModel::cache()->get('latest');
 
-    $cache = TestModel::cache()->get('latest');
-    expect($cache)->toBeTruthy()
+    expect($hasLatestCache)->toBeTrue()
+        ->and($latestCache)->toBeTruthy()
         ->name->toBe('test-name');
 });

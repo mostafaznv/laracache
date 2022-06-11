@@ -1,6 +1,6 @@
 <?php
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use function Spatie\PestPluginTestTime\testTime;
 
 beforeEach(function() {
@@ -20,7 +20,7 @@ it('will calculate time to end of the week in seconds', function() {
 });
 
 it('will calculate time to end of the week when end of week is something custom', function() {
-    config()->set('laracache.last-day-of-week', Carbon::FRIDAY);
+    config()->set('laracache.last-day-of-week', CarbonInterface::FRIDAY);
 
     $timeToEnd = week_ending_seconds();
     expect($timeToEnd)->toBe(299785);
