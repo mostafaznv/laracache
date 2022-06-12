@@ -14,11 +14,25 @@ class CacheEntity
     public string $name;
 
     /**
+     * Cache Driver (store)
+     *
+     * @var string
+     */
+    public string $driver;
+
+    /**
      * Indicate if cache should exist forever
      *
      * @var bool
      */
     public bool $forever = true;
+
+    /**
+     * Indicates if caching operation should perform in the background or not
+     *
+     * @var bool
+     */
+    public bool $isQueueable;
 
     /**
      * Indicate if cache should exist till end of day
@@ -88,6 +102,8 @@ class CacheEntity
     public function __construct(string $name)
     {
         $this->name = $name;
+        $this->driver = config('laracache.driver') ?? config('cache.default');
+        $this->isQueueable = config('laracache.queue') ?? false;
     }
 
     /**
@@ -99,6 +115,32 @@ class CacheEntity
     public static function make(string $name): CacheEntity
     {
         return new static($name);
+    }
+
+    /**
+     * Specify custom driver for cache entity
+     *
+     * @param string $driver
+     * @return $this
+     */
+    public function setDriver(string $driver): CacheEntity
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
+    /**
+     * Specify if cache operation should perform in background or not
+     *
+     * @param bool $status
+     * @return $this
+     */
+    public function isQueueable(bool $status = true): CacheEntity
+    {
+        $this->isQueueable = $status;
+
+        return $this;
     }
 
     /**
@@ -225,6 +267,29 @@ class CacheEntity
         $this->default = $defaultValue;
 
         return $this;
+    }
+
+    /**
+     * Get TTL
+     *
+     * @return int
+     * @internal
+     */
+    public function getTtl(): int
+    {
+        if ($this->forever) {
+            return 0;
+        }
+
+        if ($this->validForRestOfDay) {
+            return day_ending_seconds();
+        }
+
+        if ($this->validForRestOfWeek) {
+            return week_ending_seconds();
+        }
+
+        return $this->ttl;
     }
 
     /**

@@ -2,10 +2,12 @@
 
 namespace Mostafaznv\LaraCache;
 
+use Illuminate\Support\Facades\Cache;
+
 class LaraCache
 {
     /**
-     * Update Cache
+     * Update Cache Entity
      *
      * @param mixed $model
      * @param string $name
@@ -24,9 +26,53 @@ class LaraCache
      *
      * @param mixed $model
      */
-    public function updateAll(mixed $model): void
+    public function updateAll(mixed $model = null): void
     {
-        $model::cache()->updateAll();
+        if ($model) {
+            $model::cache()->updateAll();
+        }
+        else {
+            $list = self::list();
+
+            /** @var mixed $model */
+            foreach ($list as $model => $entities) {
+                $model::cache()->updateAll();
+            }
+        }
+    }
+
+    /**
+     * Delete Cache Entity
+     *
+     * @param mixed $model
+     * @param string $name
+     * @param bool $forever
+     * @return mixed
+     */
+    public function delete(mixed $model, string $name, bool $forever = false): mixed
+    {
+        return $model::cache()->delete($name, $forever);
+    }
+
+    /**
+     * Delete All Cache Entities
+     *
+     * @param mixed $model
+     * @param bool $forever
+     */
+    public function deleteAll(mixed $model = null, bool $forever = false): void
+    {
+        if ($model) {
+            $model::cache()->deleteAll($forever);
+        }
+        else {
+            $list = self::list();
+
+            /** @var mixed $model */
+            foreach ($list as $model => $entities) {
+                $model::cache()->deleteAll($forever);
+            }
+        }
     }
 
     /**
@@ -34,12 +80,12 @@ class LaraCache
      *
      * @param mixed $model
      * @param string $name
-     *
+     * @param bool $withCacheData
      * @return mixed
      */
-    public function retrieve(mixed $model, string $name): mixed
+    public function retrieve(mixed $model, string $name, bool $withCacheData = false): mixed
     {
-        return $model::cache()->get($name);
+        return $model::cache()->get($name, $withCacheData);
     }
 
     /**
@@ -60,5 +106,18 @@ class LaraCache
     public function enable($model): void
     {
         $model::cache()->enable();
+    }
+
+    /**
+     * Retrieve List of All Cache Entities
+     *
+     * @return array
+     */
+    public function list(): array
+    {
+        $laracacheListKey = config('laracache.laracache-list');
+        $driver = config('laracache.driver') ?? config('cache.default');
+
+        return Cache::store($driver)->get($laracacheListKey, []);
     }
 }

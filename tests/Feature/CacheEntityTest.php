@@ -12,6 +12,50 @@ it('will make cache entity using factory', function() {
         ->name->toBe('test-name');
 });
 
+it('will set driver if to default cache driver if laracache.driver is null', function() {
+    config()->set('cache.default', 'fake-driver');
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->driver)->toBe('fake-driver');
+});
+
+it('will set driver if laracache.driver is set', function() {
+    config()->set('laracache.driver', 'fake-driver');
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->driver)->toBe('fake-driver');
+});
+
+it('will set is queueable by default', function() {
+    expect($this->entity->isQueueable)->toBeFalse();
+
+    config()->set('laracache.queue', true);
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->isQueueable)->toBeTrue();
+});
+
+it('will set custom queue status', function() {
+    expect($this->entity->isQueueable)->toBeFalse();
+
+    $this->entity->isQueueable();
+    expect($this->entity->isQueueable)->toBeTrue();
+
+    $this->entity->isQueueable(false);
+    expect($this->entity->isQueueable)->toBeFalse();
+});
+
+it('will set specific driver for entity', function() {
+    expect($this->entity->driver)->toBe('array');
+
+    $this->entity->setDriver('fake-driver');
+
+    expect($this->entity->driver)->toBe('fake-driver');
+});
+
 it('will set refresh after create correctly', function() {
     expect($this->entity->refreshAfterCreate)->toBeTrue();
 

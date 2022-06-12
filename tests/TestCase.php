@@ -33,15 +33,14 @@ abstract class TestCase extends Orchestra
      */
     public function getEnvironmentSetUp($app)
     {
+        config()->set('cache.default', 'array');
+
         config()->set('database.default', 'sqlite');
         config()->set('database.connections.sqlite', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
         ]);
-
-        config()->set('cache.default', 'database');
-        config()->set('cache.prefix', '');
     }
 
     /**
@@ -61,18 +60,12 @@ abstract class TestCase extends Orchestra
 
         $app['db']->connection()
             ->getSchemaBuilder()
-            ->create('cache', function(Blueprint $table) {
-                $table->string('key')->primary();
-                $table->mediumText('value');
-                $table->integer('expiration');
-            });
-
-        $app['db']->connection()
-            ->getSchemaBuilder()
-            ->create('cache_locks', function(Blueprint $table) {
-                $table->string('key')->primary();
-                $table->string('owner');
-                $table->integer('expiration');
+            ->create('test_models_2', function(Blueprint $table) {
+                $table->increments('id');
+                $table->string('name');
+                $table->string('content', 500)->nullable();
+                $table->timestamps();
+                $table->softDeletes();
             });
     }
 }

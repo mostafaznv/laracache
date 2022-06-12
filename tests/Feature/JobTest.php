@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 
@@ -17,9 +18,15 @@ it('will process cache through queue', function() {
 it('will update cache through queue', function() {
     config()->set('laracache.queue', true);
 
+    $hasCache = Cache::has('test-model.latest');
+    expect($hasCache)->toBeFalse();
+
     createModel();
 
-    $cache = TestModel::cache()->get('latest');
-    expect($cache)->toBeTruthy()
+    $hasLatestCache = Cache::has('test-model.latest');
+    $latestCache = TestModel::cache()->get('latest');
+
+    expect($hasLatestCache)->toBeTrue()
+        ->and($latestCache)->toBeTruthy()
         ->name->toBe('test-name');
 });
