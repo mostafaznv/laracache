@@ -19,8 +19,9 @@ it('will throw exception if entity name is not defined during updating cache', f
 
 it('will update cache after updating record', function() {
     $name = 'latest';
+    $fullName = 'test-model.latest';
 
-    $facadeCache = Cache::get($name);
+    $facadeCache = Cache::get($fullName);
     $cache = TestModel::cache()->get($name);
 
     expect($cache->name)->toBe('test-name')
@@ -29,7 +30,7 @@ it('will update cache after updating record', function() {
     $this->model->name = 'new-test-name';
     $this->model->save();
 
-    $facadeCache = Cache::get($name);
+    $facadeCache = Cache::get($fullName);
     $cache = TestModel::cache()->get($name);
 
     expect($cache->name)->toBe('new-test-name')
@@ -38,6 +39,7 @@ it('will update cache after updating record', function() {
 
 it('will not update cache after updating record if refresh-after-update flag is false', function() {
     $name = 'latest.no-update';
+    $fullName = 'test-model.latest.no-update';
 
     $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
@@ -45,7 +47,7 @@ it('will not update cache after updating record if refresh-after-update flag is 
     $this->model->name = 'new-test-name';
     $this->model->save();
 
-    $cacheFacade = Cache::get($name);
+    $cacheFacade = Cache::get($fullName);
     $cache = TestModel::cache()->get($name);
 
     expect($cache->name)->toBe('test-name')
@@ -153,12 +155,12 @@ it('will update all cache entities that stored with laracache', function() {
 
     $latestCache1 = TestModel::cache()->get('latest');
     $dayCache1 = TestModel::cache()->get('list.day');
-    $latestCache2 = TestModel2::cache()->get('latest-2');
-    $dayCache2 = TestModel2::cache()->get('list-2.day');
+    $latestCache2 = TestModel2::cache()->get('latest');
+    $dayCache2 = TestModel2::cache()->get('list.day');
 
     expect($latestCache1->name)->toBe('test-name')
         ->and($dayCache1)->toHaveCount(1)
-        ->and($latestCache2->name)->toBe('test-name')
+        ->and($latestCache2->name)->toBe('test-name-2')
         ->and($dayCache2)->toHaveCount(1);
 
     DB::table('test_models')
@@ -175,20 +177,20 @@ it('will update all cache entities that stored with laracache', function() {
 
     $latestCache1 = TestModel::cache()->get('latest');
     $dayCache1 = TestModel::cache()->get('list.day');
-    $latestCache2 = TestModel2::cache()->get('latest-2');
-    $dayCache2 = TestModel2::cache()->get('list-2.day');
+    $latestCache2 = TestModel2::cache()->get('latest');
+    $dayCache2 = TestModel2::cache()->get('list.day');
 
     expect($latestCache1->name)->toBe('test-name')
         ->and($dayCache1)->toHaveCount(1)
-        ->and($latestCache2->name)->toBe('test-name')
+        ->and($latestCache2->name)->toBe('test-name-2')
         ->and($dayCache2)->toHaveCount(1);
 
     LaraCache::updateAll();
 
     $latestCache1 = TestModel::cache()->get('latest');
     $dayCache1 = TestModel::cache()->get('list.day');
-    $latestCache2 = TestModel2::cache()->get('latest-2');
-    $dayCache2 = TestModel2::cache()->get('list-2.day');
+    $latestCache2 = TestModel2::cache()->get('latest');
+    $dayCache2 = TestModel2::cache()->get('list.day');
 
     expect($latestCache1->name)->toBe('new-test-name')
         ->and($dayCache1)->toHaveCount(1)

@@ -22,13 +22,14 @@ it('will throw exception if entity name is not defined during deleting cache', f
 
 it('will delete cache after deleting record', function() {
     $name = 'latest';
+    $fullName = 'test-model.latest';
 
     $cache = TestModel::cache()->get($name);
     expect($cache->name)->toBe('test-name');
 
     $this->model->delete();
 
-    $facadeCache = Cache::get($name);
+    $facadeCache = Cache::get($fullName);
     $cache = TestModel::cache()->get($name);
 
     expect($cache)->toBeNull()
@@ -256,9 +257,9 @@ it('will delete all cache entities that stored with laracache', function() {
     $weekCache1 = LaraCache::retrieve(TestModel::class, 'list.week', true);
     $dayCache1 = LaraCache::retrieve(TestModel::class, 'list.day', true);
     $latestCache1 = LaraCache::retrieve(TestModel::class, 'latest', true);
-    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.week', true);
-    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.day', true);
-    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest-2', true);
+    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list.week', true);
+    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list.day', true);
+    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest', true);
 
     expect($weekCache1->expiration)->toBe(1653177599)
         ->and($dayCache1->expiration)->toBe(1652831999)
@@ -272,9 +273,9 @@ it('will delete all cache entities that stored with laracache', function() {
     $weekCache1 = LaraCache::retrieve(TestModel::class, 'list.week', true);
     $dayCache1 = LaraCache::retrieve(TestModel::class, 'list.day', true);
     $latestCache1 = LaraCache::retrieve(TestModel::class, 'latest', true);
-    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.week', true);
-    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.day', true);
-    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest-2', true);
+    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list.week', true);
+    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list.day', true);
+    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest', true);
 
     expect($weekCache1->status->equals(CacheStatus::DELETED()))->toBeTrue()
         ->and($weekCache1->expiration)->toBe(1653177599)
@@ -302,9 +303,9 @@ it('will delete all cache entities that stored with laracache forever', function
     $weekCache1 = LaraCache::retrieve(TestModel::class, 'list.week', true);
     $dayCache1 = LaraCache::retrieve(TestModel::class, 'list.day', true);
     $latestCache1 = LaraCache::retrieve(TestModel::class, 'latest', true);
-    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.week', true);
-    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.day', true);
-    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest-2', true);
+    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list.week', true);
+    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list.day', true);
+    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest', true);
 
     expect($weekCache1->expiration)->toBe(1653177599)
         ->and($dayCache1->expiration)->toBe(1652831999)
@@ -318,9 +319,9 @@ it('will delete all cache entities that stored with laracache forever', function
     $weekCache1 = LaraCache::retrieve(TestModel::class, 'list.week', true);
     $dayCache1 = LaraCache::retrieve(TestModel::class, 'list.day', true);
     $latestCache1 = LaraCache::retrieve(TestModel::class, 'latest', true);
-    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.week', true);
-    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list-2.day', true);
-    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest-2', true);
+    $weekCache2 = LaraCache::retrieve(TestModel2::class, 'list.week', true);
+    $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list.day', true);
+    $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest', true);
 
     expect($weekCache1->expiration)->toBeNull()
         ->and($dayCache1->expiration)->toBeNull()

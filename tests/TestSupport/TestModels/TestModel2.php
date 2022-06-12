@@ -17,31 +17,31 @@ class TestModel2 extends Model
     public static function cacheEntities(): array
     {
         return [
-            CacheEntity::make('list-2.forever')
+            CacheEntity::make('list.forever')
                 ->forever()
                 ->cache(function() {
                     return TestModel2::query()->latest()->get();
                 }),
 
-            CacheEntity::make('list-2.day')
+            CacheEntity::make('list.day')
                 ->validForRestOfDay()
                 ->cache(function() {
                     return TestModel2::query()->latest()->get();
                 }),
 
-            CacheEntity::make('list-2.week')
+            CacheEntity::make('list.week')
                 ->validForRestOfWeek()
                 ->cache(function() {
                     return TestModel2::query()->latest()->get();
                 }),
 
-            CacheEntity::make('list-2.ttl')
+            CacheEntity::make('list.ttl')
                 ->ttl(120)
                 ->cache(function() {
                     return TestModel2::query()->latest()->get();
                 }),
 
-            CacheEntity::make('latest-2')
+            CacheEntity::make('latest')
                 ->forever()
                 ->cache(function() {
                     return TestModel2::query()->latest()->first();

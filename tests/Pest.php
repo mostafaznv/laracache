@@ -19,7 +19,7 @@ function createModel(?string $name = null): TestModel
 function createModel2(?string $name = null): TestModel2
 {
     $model = new TestModel2();
-    $model->name = $name ?? 'test-name';
+    $model->name = $name ?? 'test-name-2';
     $model->content = 'content';
     $model->save();
 

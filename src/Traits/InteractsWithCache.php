@@ -3,6 +3,7 @@
 namespace Mostafaznv\LaraCache\Traits;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheEvent;
@@ -11,15 +12,22 @@ use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 
 trait InteractsWithCache
 {
+    private string $prefix;
     private mixed  $model;
     private string $laracacheListKey;
 
     public function __construct(string $model)
     {
+        $this->prefix = Str::kebab(class_basename($model));
         $this->model = $model;
         $this->laracacheListKey = config('laracache.laracache-list');
     }
 
+
+    private function getEntityFullName(CacheEntity $entity): string
+    {
+        return $this->prefix . '.' . $entity->name;
+    }
 
     private function findCacheEntity(string $name, ?CacheEntity $entity = null): CacheEntity
     {
@@ -62,21 +70,22 @@ trait InteractsWithCache
 
     private function updateCacheEntitiesList(CacheEntity $entity): void
     {
+        $name = $this->getEntityFullName($entity);
         $list = Cache::store($entity->driver)->get($this->laracacheListKey);
 
         if (is_array($list)) {
             if (isset($list[$this->model]) and is_array($list[$this->model])) {
-                if (!in_array($entity->name, $list[$this->model])) {
-                    $list[$this->model][] = $entity->name;
+                if (!in_array($name, $list[$this->model])) {
+                    $list[$this->model][] = $name;
                 }
             }
             else {
-                $list[$this->model] = [$entity->name];
+                $list[$this->model] = [$name];
             }
         }
         else {
             $list = [
-                $this->model => [$entity->name]
+                $this->model => [$name]
             ];
         }
 
@@ -85,9 +94,11 @@ trait InteractsWithCache
 
     private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl): void
     {
+        $name = $this->getEntityFullName($entity);
+
         is_null($cache->expiration)
-            ? Cache::store($entity->driver)->forever($entity->name, $cache)
-            : Cache::store($entity->driver)->put($entity->name, $cache, $ttl);
+            ? Cache::store($entity->driver)->forever($name, $cache)
+            : Cache::store($entity->driver)->put($name, $cache, $ttl);
 
         $this->updateCacheEntitiesList($entity);
     }
@@ -104,7 +115,7 @@ trait InteractsWithCache
             return $cache;
         }
 
-        return CacheData::fromCache($entity);
+        return CacheData::fromCache($entity, $this->prefix);
     }
 
     private function deleteCacheEntity(string $name, bool $deleteForever = false, CacheEntity $entity = null): CacheData
@@ -120,7 +131,7 @@ trait InteractsWithCache
     private function retrieve(string $name): CacheData
     {
         $entity = $this->findCacheEntity($name);
-        $cache = CacheData::fromCache($entity);
+        $cache = CacheData::fromCache($entity, $this->prefix);
 
         if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
             return $this->updateCacheEntity($name, null, $entity);

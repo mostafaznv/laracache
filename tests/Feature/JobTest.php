@@ -18,12 +18,12 @@ it('will process cache through queue', function() {
 it('will update cache through queue', function() {
     config()->set('laracache.queue', true);
 
-    $hasCache = Cache::has('latest');
+    $hasCache = Cache::has('test-model.latest');
     expect($hasCache)->toBeFalse();
 
     createModel();
 
-    $hasLatestCache = Cache::has('latest');
+    $hasLatestCache = Cache::has('test-model.latest');
     $latestCache = TestModel::cache()->get('latest');
 
     expect($hasLatestCache)->toBeTrue()
