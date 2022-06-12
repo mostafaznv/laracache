@@ -26,9 +26,19 @@ class LaraCache
      *
      * @param mixed $model
      */
-    public function updateAll(mixed $model): void
+    public function updateAll(mixed $model = null): void
     {
-        $model::cache()->updateAll();
+        if ($model) {
+            $model::cache()->updateAll();
+        }
+        else {
+            $list = self::list();
+
+            /** @var mixed $model */
+            foreach ($list as $model => $entities) {
+                $model::cache()->updateAll();
+            }
+        }
     }
 
     /**
@@ -58,6 +68,7 @@ class LaraCache
         else {
             $list = self::list();
 
+            /** @var mixed $model */
             foreach ($list as $model => $entities) {
                 $model::cache()->deleteAll($forever);
             }

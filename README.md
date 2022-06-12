@@ -109,6 +109,7 @@ Manually updating the cache entities of models after dispatching model events (c
 - [Update Cache Manually](#update-cache-manually)
     - [Update an Entity](#update-an-entity)
     - [Update all Entities](#update-all-entities)
+    - [Update all LaraCache Entities](#update-all-laracache-entities)
 - [Delete Cache Manually](#delete-cache-manually)
     - [Delete an Entity](#delete-an-entity)
     - [Delete an Entity Forever](#delete-an-entity-forever)
@@ -192,7 +193,19 @@ use Mostafaznv\LaraCache\Facades\LaraCache;
 
 Article::cache()->updateAll();
 // or 
-LaraCache::updateAll(Article::class, 'latest');
+LaraCache::updateAll(Article::class);
+```
+
+### Update all LaraCache Entities
+
+This will update all cache entities that stored using LaraCache (across all models)
+
+```php
+use App\Models\Article;
+use Mostafaznv\LaraCache\Facades\LaraCache;
+
+ 
+LaraCache::updateAll();
 ```
 
 ## Delete Cache Manually

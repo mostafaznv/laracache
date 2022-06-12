@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
+use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 
 beforeEach(function() {
     $this->model = createModel();
@@ -145,4 +146,52 @@ it('will update all cache entities manually using facade', function() {
 
     expect($latestCache->name)->toBe('new-test-name')
         ->and($foreverCache)->toHaveCount(2);
+});
+
+it('will update all cache entities that stored with laracache', function() {
+    $model2 = createModel2();
+
+    $latestCache1 = TestModel::cache()->get('latest');
+    $dayCache1 = TestModel::cache()->get('list.day');
+    $latestCache2 = TestModel2::cache()->get('latest-2');
+    $dayCache2 = TestModel2::cache()->get('list-2.day');
+
+    expect($latestCache1->name)->toBe('test-name')
+        ->and($dayCache1)->toHaveCount(1)
+        ->and($latestCache2->name)->toBe('test-name')
+        ->and($dayCache2)->toHaveCount(1);
+
+    DB::table('test_models')
+        ->where('id', $this->model->id)
+        ->update([
+            'name' => 'new-test-name'
+        ]);
+
+    DB::table('test_models_2')
+        ->where('id', $model2->id)
+        ->update([
+            'name' => 'new-test-name-2'
+        ]);
+
+    $latestCache1 = TestModel::cache()->get('latest');
+    $dayCache1 = TestModel::cache()->get('list.day');
+    $latestCache2 = TestModel2::cache()->get('latest-2');
+    $dayCache2 = TestModel2::cache()->get('list-2.day');
+
+    expect($latestCache1->name)->toBe('test-name')
+        ->and($dayCache1)->toHaveCount(1)
+        ->and($latestCache2->name)->toBe('test-name')
+        ->and($dayCache2)->toHaveCount(1);
+
+    LaraCache::updateAll();
+
+    $latestCache1 = TestModel::cache()->get('latest');
+    $dayCache1 = TestModel::cache()->get('list.day');
+    $latestCache2 = TestModel2::cache()->get('latest-2');
+    $dayCache2 = TestModel2::cache()->get('list-2.day');
+
+    expect($latestCache1->name)->toBe('new-test-name')
+        ->and($dayCache1)->toHaveCount(1)
+        ->and($latestCache2->name)->toBe('new-test-name-2')
+        ->and($dayCache2)->toHaveCount(1);
 });
