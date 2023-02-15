@@ -14,6 +14,8 @@ jobs:
         coverage: [none]
         dependency-version: [prefer-stable]
         include:
+          - laravel: 10.*
+            testbench: 8.*
           - laravel: 9.*
             testbench: 7.*
           - laravel: 8.*
