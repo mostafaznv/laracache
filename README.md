@@ -1,6 +1,6 @@
 # LaraCache
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mostafaznv/laracache/Run%20Tests?label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/laracache/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/laracache/run-tests.yml?branch=master?label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/laracache/actions)
 [![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/laracache/master.svg?style=flat-square&logo=codecov)](https://app.codecov.io/gh/mostafaznv/laracache)
 [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/laracache.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/laracache)
 [![GitHub license](https://img.shields.io/github/license/mostafaznv/laracache?style=flat-square)](https://github.com/mostafaznv/laracache/blob/master/LICENSE)
@@ -19,7 +19,7 @@ Manually updating the cache entities of models after dispatching model events (c
 
 
 ----
-I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
@@ -386,7 +386,7 @@ class Article extends Model
 ```
 
 ----
-I develop in a open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
