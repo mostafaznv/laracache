@@ -1,6 +1,6 @@
 # LaraCache
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/laracache/run-tests.yml?branch=master?label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/laracache/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mostafaznv/laracache/run-tests.yml?branch=master&label=Build&style=flat-square&logo=github)](https://github.com/mostafaznv/laracache/actions)
 [![Codecov branch](https://img.shields.io/codecov/c/github/mostafaznv/laracache/master.svg?style=flat-square&logo=codecov)](https://app.codecov.io/gh/mostafaznv/laracache)
 [![Quality Score](https://img.shields.io/scrutinizer/g/mostafaznv/laracache.svg?style=flat-square)](https://scrutinizer-ci.com/g/mostafaznv/laracache)
 [![GitHub license](https://img.shields.io/github/license/mostafaznv/laracache?style=flat-square)](https://github.com/mostafaznv/laracache/blob/master/LICENSE)
