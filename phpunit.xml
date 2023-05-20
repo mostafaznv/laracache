@@ -20,5 +20,6 @@
 
     <php>
         <env name="APP_NAME" value="laracache-app"/>
+        <server name="QUEUE_CONNECTION" value="database"/>
     </php>
 </phpunit>

@@ -1,6 +1,7 @@
 <?php
 
 use Mostafaznv\LaraCache\Tests\TestCase;
+use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 
@@ -20,6 +21,16 @@ function createModel2(?string $name = null): TestModel2
 {
     $model = new TestModel2();
     $model->name = $name ?? 'test-name-2';
+    $model->content = 'content';
+    $model->save();
+
+    return $model;
+}
+
+function createQueueModel(?string $name = null): QueueTestModel
+{
+    $model = new QueueTestModel();
+    $model->name = $name ?? 'queue-test-name';
     $model->content = 'content';
     $model->save();
 

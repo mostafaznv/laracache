@@ -13,7 +13,7 @@ use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 trait InteractsWithCache
 {
     private string $prefix;
-    private mixed  $model;
+    private mixed $model;
     private string $laracacheListKey;
 
     public function __construct(string $model)
@@ -92,14 +92,34 @@ trait InteractsWithCache
         Cache::store($entity->driver)->forever($this->laracacheListKey, $list);
     }
 
+    private function putCacheIntoCacheStorage(CacheData $cache, string $driver, string $name, int $ttl): bool
+    {
+        if (is_null($cache->expiration)) {
+            return Cache::store($driver)->forever($name, $cache);
+        }
+
+        return Cache::store($driver)->put($name, $cache, $ttl);
+    }
+
+    private function initCache(CacheEntity $entity, int $ttl): void
+    {
+        $name = $this->getEntityFullName($entity);
+        $cache = CacheData::fromCache($entity, $this->prefix, $ttl);
+
+        if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+            $cache->value = $entity->default;
+        }
+
+        $cache->status = CacheStatus::CREATING();
+
+        $this->putCacheIntoCacheStorage($cache, $entity->driver, $name, $ttl);
+    }
+
     private function storeCache(CacheData $cache, CacheEntity $entity, int $ttl): void
     {
         $name = $this->getEntityFullName($entity);
 
-        is_null($cache->expiration)
-            ? Cache::store($entity->driver)->forever($name, $cache)
-            : Cache::store($entity->driver)->put($name, $cache, $ttl);
-
+        $this->putCacheIntoCacheStorage($cache, $entity->driver, $name, $ttl);
         $this->updateCacheEntitiesList($entity);
     }
 
@@ -109,6 +129,8 @@ trait InteractsWithCache
 
         if ($this->entityIsCallable($entity, $event)) {
             $ttl = $entity->getTtl();
+
+            $this->initCache($entity, $ttl);
             $cache = $this->callCacheClosure($entity, $ttl);
             $this->storeCache($cache, $entity, $ttl);
 
