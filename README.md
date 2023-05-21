@@ -296,15 +296,22 @@ This feature allows you to update or delete multiple cache entities of one or mo
 
 ### Update Cache
 ```shell
+// updates all entities of article model
 php artisan laracache:update -m Article
+
+// updates specified entities of article model
 php artisan laracache:update -m Article -e latest -e featured
+
+// updates all entities of article and product models
 php artisan laracache:update -m Article -m Product
+
+// defines model with full namespace
 php artisan laracache:update -m Domain\Article\Models\Article
 ```
 
-> Note: If you don't specify any entity, all entities will be updated.
+> **Note**: If you don't specify any entity, all entities will be updated.
 
-> Note: If you specify multiple models, you can't specify any entity and all entities of all models will be updated.
+> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be updated.
 
 ## Config Properties
 
