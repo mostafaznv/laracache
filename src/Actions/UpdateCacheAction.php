@@ -69,14 +69,11 @@ class UpdateCacheAction
 
     private function title(string $string): string
     {
-        $replace = [
-            '.' => '',
-            '-' => '',
-            '_' => ''
-        ];
-
         return Str::title(
-            Str::slug($string, ' ', 'en', $replace)
+            Str::slug(
+                title: Str::replace(['.', '-', '_'], ' ', $string),
+                separator: ' '
+            )
         );
     }
 }
