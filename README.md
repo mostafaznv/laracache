@@ -116,6 +116,8 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
     - [Delete all Model Entities](#delete-all-model-entities)
     - [Delete all Model Entities Forever](#delete-all-model-entities-forever)
     - [Delete all LaraCache Entities](#delete-all-laracache-entities)
+- [Artisan Commands](#artisan-commands)
+    - [Update Cache](#update-cache)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -288,6 +290,21 @@ LaraCache::deleteAll(forever: true);
 
 
 
+
+## Artisan Commands
+This feature allows you to update or delete multiple cache entities of one or more models from the console command. This means you can programmatically control the cache data outside the caching cycle.
+
+### Update Cache
+```shell
+php artisan laracache:update -m Article
+php artisan laracache:update -m Article -e latest -e featured
+php artisan laracache:update -m Article -m Product
+php artisan laracache:update -m Domain\Article\Models\Article
+```
+
+> Note: If you don't specify any entity, all entities will be updated.
+
+> Note: If you specify multiple models, you can't specify any entity and all entities of all models will be updated.
 
 ## Config Properties
 
