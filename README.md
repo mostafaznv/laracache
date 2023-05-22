@@ -312,10 +312,6 @@ php artisan laracache:update -m Article -m Product
 php artisan laracache:update -m Domain\Article\Models\Article
 ```
 
-> **Note**: If you don't specify any entity, all entities will be updated.
-
-> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be updated.
-
 ### Delete Cache
 ```shell
 # deletes all entities of article model
@@ -331,9 +327,9 @@ php artisan laracache:delete -m Article -m Product
 php artisan laracache:delete -m Domain\Article\Models\Article
 ```
 
-> **Note**: If you don't specify any entity, all entities will be deleted.
+> **Note**: If you don't specify any entity, all entities will be operated.
 
-> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be deleted.
+> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be operated.
 
 
 ## Config Properties
