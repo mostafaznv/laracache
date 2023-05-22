@@ -381,13 +381,14 @@ return [
 
 ## Config Properties
 
-| method                   | Type                                 | description                                                                                                                                                     |
-|--------------------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| driver                   | string (default: `null`)             | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`       |
-| laracache-list           | string (default: `laracache.list`)   | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)     |
-| first-day-of-week        | integer (default: `0`)               | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
-| last-day-of-week         | integer (default: `6`)               | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
-| queue                    | bool (default: `false`)              | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+| method            | Type                               | description                                                                                                                                                     |
+|-------------------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| driver            | string (default: `null`)           | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`       |
+| laracache-list    | string (default: `laracache.list`) | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)     |
+| first-day-of-week | integer (default: `0`)             | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
+| last-day-of-week  | integer (default: `6`)             | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
+| queue             | bool (default: `false`)            | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+| groups            | array (default: `[]`)              | You can group some entities and perform some operations on them                                                                                                 |
 
 
 ## Complete Example
