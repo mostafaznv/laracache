@@ -5,6 +5,7 @@ namespace Mostafaznv\LaraCache;
 use Illuminate\Support\ServiceProvider;
 use Mostafaznv\LaraCache\Commands\DeleteCacheCommand;
 use Mostafaznv\LaraCache\Commands\UpdateCacheCommand;
+use Mostafaznv\LaraCache\Commands\UpdateGroupCacheCommand;
 
 class LaraCacheServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,8 @@ class LaraCacheServiceProvider extends ServiceProvider
 
             $this->commands([
                 UpdateCacheCommand::class,
-                DeleteCacheCommand::class
+                DeleteCacheCommand::class,
+                UpdateGroupCacheCommand::class
             ]);
         }
     }

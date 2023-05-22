@@ -34,7 +34,6 @@ beforeEach(function() {
 
 
 it('will update all entities of all models if multiple models sent to the action', function() {
-
     $names = [
         'list.day', 'list.week', 'list.forever', 'latest'
     ];

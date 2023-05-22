@@ -61,4 +61,44 @@ return [
     */
 
     'queue' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Groups
+    |--------------------------------------------------------------------------
+    |
+    | You can group some entities and perform some actions on them.
+    |
+    | Example:
+    | 'groups' => [
+    |    'group-1' => [
+    |        [
+    |            'model' => \App\Models\User::class,
+    |            'entities' => [
+    |                'featured', 'latest', 'popular'
+    |            ],
+    |        ],
+    |        [
+    |            'model' => \App\Models\Article::class,
+    |            'entities' => [],
+    |        ]
+    |    ],
+    |
+    |    'group-2' => [
+    |        [
+    |            'model' => \App\Models\Product::class,
+    |            'entities' => [
+    |                'latest', 'popular'
+    |            ],
+    |        ],
+    |        [
+    |            'model' => \App\Models\Article::class,
+    |            'entities' => [],
+    |        ]
+    |    ],
+    | ],
+    |
+    */
+
+    'groups' => [],
 ];
