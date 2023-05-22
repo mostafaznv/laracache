@@ -120,6 +120,7 @@ Therefore, if you decide to use my packages, please kindly consider making a don
     - [Delete all LaraCache Entities](#delete-all-laracache-entities)
 - [Artisan Commands](#artisan-commands)
     - [Update Cache](#update-cache)
+    - [Delete Cache](#delete-cache)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -298,22 +299,42 @@ This feature allows you to update or delete multiple cache entities of one or mo
 
 ### Update Cache
 ```shell
-// updates all entities of article model
+# updates all entities of article model
 php artisan laracache:update -m Article
 
-// updates specified entities of article model
+# updates specified entities of article model
 php artisan laracache:update -m Article -e latest -e featured
 
-// updates all entities of article and product models
+# updates all entities of article and product models
 php artisan laracache:update -m Article -m Product
 
-// defines model with full namespace
+# defines model with full namespace
 php artisan laracache:update -m Domain\Article\Models\Article
 ```
 
 > **Note**: If you don't specify any entity, all entities will be updated.
 
 > **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be updated.
+
+### Delete Cache
+```shell
+# deletes all entities of article model
+php artisan laracache:delete -m Article
+
+# deletes specified entities of article model
+php artisan laracache:delete -m Article -e latest -e featured
+
+# deletes all entities of article and product models
+php artisan laracache:delete -m Article -m Product
+
+# defines model with full namespace
+php artisan laracache:delete -m Domain\Article\Models\Article
+```
+
+> **Note**: If you don't specify any entity, all entities will be deleted.
+
+> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be deleted.
+
 
 ## Config Properties
 

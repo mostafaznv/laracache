@@ -4,21 +4,21 @@ namespace Mostafaznv\LaraCache\Actions;
 
 use Mostafaznv\LaraCache\DTOs\CommandData;
 
-class UpdateCacheAction extends UpdateDeleteCache
+class DeleteCacheAction extends UpdateDeleteCache
 {
     public function run(CommandData $data): void
     {
         if (count($data->models) > 1) {
             foreach ($data->models as $model) {
-                $this->updateAll($model);
+                $this->deleteAll($model);
             }
         }
         else {
             $model = $data->models[0];
 
             empty($data->entities)
-                ? $this->updateAll($model)
-                : $this->update($model, $data->entities);
+                ? $this->deleteAll($model)
+                : $this->delete($model, $data->entities);
         }
     }
 
@@ -26,7 +26,7 @@ class UpdateCacheAction extends UpdateDeleteCache
      * @param \Mostafaznv\LaraCache\Traits\LaraCache $model
      * @return void
      */
-    private function updateAll(string $model): void
+    private function deleteAll(string $model): void
     {
         $entities = [];
 
@@ -34,7 +34,7 @@ class UpdateCacheAction extends UpdateDeleteCache
             $entities[] = $entity->name;
         }
 
-        $this->update($model, $entities);
+        $this->delete($model, $entities);
     }
 
     /**
@@ -42,18 +42,18 @@ class UpdateCacheAction extends UpdateDeleteCache
      * @param array $entities
      * @return void
      */
-    private function update(string $model, array $entities): void
+    private function delete(string $model, array $entities): void
     {
         $this->console?->warn(
-            sprintf('>> Updating cache entities in [%s] model', class_basename($model))
+            sprintf('>> Deleting cache entities in [%s] model', class_basename($model))
         );
 
         foreach ($entities as $entity) {
             $this->console?->line('— ' . $this->title($entity));
 
-            $model::cache()->update($entity);
+            $model::cache()->delete($entity);
 
-            $this->console?->info('Updated');
+            $this->console?->info('Deleted');
         }
     }
 }
