@@ -2,6 +2,7 @@
 
 namespace Mostafaznv\LaraCache\Actions;
 
+use Mostafaznv\LaraCache\Actions\Support\UpdateDeleteCache;
 use Mostafaznv\LaraCache\DTOs\CommandData;
 
 class DeleteCacheAction extends UpdateDeleteCache
