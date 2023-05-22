@@ -338,10 +338,10 @@ php artisan laracache:delete -m Domain\Article\Models\Article
 ### Group Operations
 ```shell
 # updates all entities of models that are in group-1
-php php artisan laracache:update-group group-1
+php artisan laracache:update-group group-1
 
 # deletes all entities of models that are in group-1
-php php artisan laracache:delete-group group-1
+php artisan laracache:delete-group group-1
 ```
 
 This is an example of a group configuration:
