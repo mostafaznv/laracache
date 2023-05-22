@@ -116,7 +116,7 @@ it('will print the name of updated cache entities in the console', function() {
     ];
 
     $names = [
-        'List Week', 'List Forever', 'Latest'
+        "List Week\nUpdated", "List Forever\nUpdated", "Latest\nUpdated"
     ];
 
 
@@ -129,8 +129,10 @@ it('will print the name of updated cache entities in the console', function() {
 
     $output = Artisan::output();
 
-    expect($output)->toBeString()
-        ->toContain($names[0], $names[1], $names[2])
-        ->toContain('Updated');
+    expect($output)
+        ->toBeString()
+        ->toContain($names[0])
+        ->toContain($names[1])
+        ->toContain($names[2]);
 });
 

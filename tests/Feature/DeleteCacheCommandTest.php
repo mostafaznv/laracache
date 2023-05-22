@@ -109,7 +109,7 @@ it('will print the name of deleted cache entities in the console', function() {
     ];
 
     $names = [
-        'List Week', 'List Forever', 'Latest'
+        "List Week\nDeleted", "List Forever\nDeleted", "Latest"
     ];
 
 
@@ -122,7 +122,9 @@ it('will print the name of deleted cache entities in the console', function() {
 
     $output = Artisan::output();
 
-    expect($output)->toBeString()
-        ->toContain($names[0], $names[1], $names[2])
-        ->toContain('Deleted');
+    expect($output)
+        ->toBeString()
+        ->toContain($names[0])
+        ->toContain($names[1])
+        ->toContain($names[2]);
 });
