@@ -8,29 +8,19 @@ use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 
 beforeEach(function() {
-    DB::table((new TestModel())->getTable())
-        ->insert([
-            [
-                'name'    => 'test-model-1-1',
-                'content' => 'content 1-1'
-            ],
-            [
-                'name'    => 'test-model-1-2',
-                'content' => 'content 1-2'
-            ]
-        ]);
+    $records = [
+        [
+            'name'    => 'test-model-1',
+            'content' => 'content 1'
+        ],
+        [
+            'name'    => 'test-model-2',
+            'content' => 'content 2'
+        ]
+    ];
 
-    DB::table((new TestModel2())->getTable())
-        ->insert([
-            [
-                'name'    => 'test-model-2-1',
-                'content' => 'content 2-1'
-            ],
-            [
-                'name'    => 'test-model-2-2',
-                'content' => 'content 2-2'
-            ]
-        ]);
+    DB::table((new TestModel())->getTable())->insert($records);
+    DB::table((new TestModel2())->getTable())->insert($records);
 });
 
 
@@ -43,7 +33,7 @@ it('will update all entities of all models if multiple models sent to the action
         $hasCache = Cache::has("test-model.$name");
         expect($hasCache)->toBeFalse();
 
-        $hasCache = Cache::has("test-model-2.$name");
+        $hasCache = Cache::has("test-model2.$name");
         expect($hasCache)->toBeFalse();
     }
 
