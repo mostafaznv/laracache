@@ -121,6 +121,7 @@ Therefore, if you decide to use my packages, please kindly consider making a don
 - [Artisan Commands](#artisan-commands)
     - [Update Cache](#update-cache)
     - [Delete Cache](#delete-cache)
+    - [Group Operations](#group-operations)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -297,6 +298,8 @@ LaraCache::deleteAll(forever: true);
 ## Artisan Commands
 This feature allows you to update or delete multiple cache entities of one or more models from the console command. This means you can programmatically control the cache data outside the caching cycle.
 
+You can also create groups of models and their entities in the config file and easily update or delete all their entities at once.
+
 ### Update Cache
 ```shell
 # updates all entities of article model
@@ -331,6 +334,50 @@ php artisan laracache:delete -m Domain\Article\Models\Article
 
 > **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be operated.
 
+
+### Group Operations
+```shell
+# updates all entities of models that are in group-1
+php php artisan laracache:update-group group-1
+
+# deletes all entities of models that are in group-1
+php php artisan laracache:delete-group group-1
+```
+
+This is an example of a group configuration:
+```php
+# config/laracache.php
+return [
+    // ...
+    'groups' => [
+        'group-1' => [
+            [
+                'model' => \App\Models\User::class,
+                'entities' => [
+                    'users.latest', 'users.featured'
+                ],
+            ],
+            [
+                'model' => \App\Models\Article::class,
+                'entities' => [],
+            ]
+        ],
+
+        'group-2' => [
+            [
+                'model' => \App\Models\Article::class,
+                'entities' => [
+                    'featured-list', 'latest'
+                ],
+            ],
+            [
+                'model' => \App\Models\User::class,
+                'entities' => ['users.latest'],
+            ]
+        ],
+    ]
+];
+```
 
 ## Config Properties
 
