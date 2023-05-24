@@ -1,13 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
 use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Illuminate\Support\Facades\Queue;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
+use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Illuminate\Support\Str;
 
 beforeEach(function() {
+    Bus::fake([
+        UpdateLaraCacheModelsList::class
+    ]);
+
     if (!Str::contains($this->getName(), '[without-model]')) {
         createQueueModel();
     }

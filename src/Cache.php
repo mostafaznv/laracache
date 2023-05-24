@@ -24,11 +24,15 @@ class Cache
 
     public function update(string $name): CacheData
     {
+        $this->updateLaraCacheModelsList();
+
         return $this->updateCacheEntity($name);
     }
 
     public function updateAll(): void
     {
+        $this->updateLaraCacheModelsList();
+
         foreach ($this->model::cacheEntities() as $entity) {
             $this->updateCacheEntity(
                 name: $entity->name,
@@ -52,6 +56,8 @@ class Cache
     public function refresh(CacheEvent $event): void
     {
         if ($this->model::$isEnabled) {
+            $this->updateLaraCacheModelsList();
+
             foreach ($this->model::cacheEntities() as $entity) {
                 if ($entity->isQueueable) {
                     $this->initCache($entity, $entity->getTtl());

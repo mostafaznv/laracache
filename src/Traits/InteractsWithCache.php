@@ -9,6 +9,7 @@ use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheEvent;
 use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
+use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 
 trait InteractsWithCache
 {
@@ -121,6 +122,11 @@ trait InteractsWithCache
 
         $this->putCacheIntoCacheStorage($cache, $entity->driver, $name, $ttl);
         $this->updateCacheEntitiesList($entity);
+    }
+
+    private function updateLaraCacheModelsList(): void
+    {
+        UpdateLaraCacheModelsList::dispatch($this->model);
     }
 
     private function updateCacheEntity(string $name, ?CacheEvent $event = null, CacheEntity $entity = null): CacheData
