@@ -19,7 +19,9 @@ Manually updating the cache entities of models after dispatching model events (c
 
 
 ----
-I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I am on an open-source journey 🚀, and I wish I could solely focus on my development path without worrying about my financial situation. However, as life is not perfect, I have to consider other factors.
+
+Therefore, if you decide to use my packages, please kindly consider making a donation. Any amount, no matter how small, goes a long way and is greatly appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
@@ -116,6 +118,10 @@ I develop in an open-source journey 🚀, I wish I lived in an environment where
     - [Delete all Model Entities](#delete-all-model-entities)
     - [Delete all Model Entities Forever](#delete-all-model-entities-forever)
     - [Delete all LaraCache Entities](#delete-all-laracache-entities)
+- [Artisan Commands](#artisan-commands)
+    - [Update Cache](#update-cache)
+    - [Delete Cache](#delete-cache)
+    - [Group Operations](#group-operations)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -289,15 +295,100 @@ LaraCache::deleteAll(forever: true);
 
 
 
+## Artisan Commands
+This feature allows you to update or delete multiple cache entities of one or more models from the console command. This means you can programmatically control the cache data outside the caching cycle.
+
+You can also create groups of models and their entities in the config file and easily update or delete all their entities at once.
+
+### Update Cache
+```shell
+# updates all entities of article model
+php artisan laracache:update -m Article
+
+# updates specified entities of article model
+php artisan laracache:update -m Article -e latest -e featured
+
+# updates all entities of article and product models
+php artisan laracache:update -m Article -m Product
+
+# defines model with full namespace
+php artisan laracache:update -m Domain\Article\Models\Article
+```
+
+### Delete Cache
+```shell
+# deletes all entities of article model
+php artisan laracache:delete -m Article
+
+# deletes specified entities of article model
+php artisan laracache:delete -m Article -e latest -e featured
+
+# deletes all entities of article and product models
+php artisan laracache:delete -m Article -m Product
+
+# defines model with full namespace
+php artisan laracache:delete -m Domain\Article\Models\Article
+```
+
+> **Note**: If you don't specify any entity, all entities will be operated.
+
+> **Note**: If you specify multiple models, you can't specify any entity and all entities of all models will be operated.
+
+
+### Group Operations
+```shell
+# updates all entities of models that are in group-1
+php artisan laracache:update-group group-1
+
+# deletes all entities of models that are in group-1
+php artisan laracache:delete-group group-1
+```
+
+This is an example of a group configuration:
+```php
+# config/laracache.php
+return [
+    // ...
+    'groups' => [
+        'group-1' => [
+            [
+                'model' => \App\Models\User::class,
+                'entities' => [
+                    'users.latest', 'users.featured'
+                ],
+            ],
+            [
+                'model' => \App\Models\Article::class,
+                'entities' => [],
+            ]
+        ],
+
+        'group-2' => [
+            [
+                'model' => \App\Models\Article::class,
+                'entities' => [
+                    'featured-list', 'latest'
+                ],
+            ],
+            [
+                'model' => \App\Models\User::class,
+                'entities' => ['users.latest'],
+            ]
+        ],
+    ]
+];
+```
+
 ## Config Properties
 
-| method                   | Type                                 | description                                                                                                                                                     |
-|--------------------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| driver                   | string (default: `null`)             | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`       |
-| laracache-list           | string (default: `laracache.list`)   | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)     |
-| first-day-of-week        | integer (default: `0`)               | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
-| last-day-of-week         | integer (default: `6`)               | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
-| queue                    | bool (default: `false`)              | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+| method            | Type                               | description                                                                                                                                                     |
+|-------------------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| driver            | string (default: `null`)           | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`       |
+| laracache-list    | string (default: `laracache.list`) | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)     |
+| first-day-of-week | integer (default: `0`)             | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
+| last-day-of-week  | integer (default: `6`)             | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
+| queue             | bool (default: `false`)            | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
+| groups            | array (default: `[]`)              | You can group some entities and perform some operations on them                                                                                                 |
 
 
 ## Complete Example
@@ -386,7 +477,9 @@ class Article extends Model
 ```
 
 ----
-I develop in an open-source journey 🚀, I wish I lived in an environment where financial situation was fine and I could only focus on the path, but as you may know, life isn't perfect. <br>So if you end up using my packages, please consider making a donation, any amount would go along way and is much appreciated. 🍺
+I am on an open-source journey 🚀, and I wish I could solely focus on my development path without worrying about my financial situation. However, as life is not perfect, I have to consider other factors.
+
+Therefore, if you decide to use my packages, please kindly consider making a donation. Any amount, no matter how small, goes a long way and is greatly appreciated. 🍺
 
 [![Donate](https://mostafaznv.github.io/donate/donate.svg)](https://mostafaznv.github.io/donate)
 
