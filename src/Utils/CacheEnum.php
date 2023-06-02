@@ -11,8 +11,13 @@ abstract class CacheEnum
         return new static($name);
     }
 
+    public function getValue(): int|string
+    {
+        return $this->value;
+    }
+
     public function equals(self $other): bool
     {
-        return get_class($this) === get_class($other) and $this->value === $other->value;
+        return get_class($this) === get_class($other) and $this->getValue() === $other->getValue();
     }
 }
