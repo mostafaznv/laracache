@@ -14,14 +14,14 @@ class LaraCacheServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/config.php' => config_path('laracache.php')], 'config');
-
-            $this->commands([
-                UpdateCacheCommand::class,
-                DeleteCacheCommand::class,
-                UpdateGroupCacheCommand::class,
-                DeleteGroupCacheCommand::class
-            ]);
         }
+
+        $this->commands([
+            UpdateCacheCommand::class,
+            DeleteCacheCommand::class,
+            UpdateGroupCacheCommand::class,
+            DeleteGroupCacheCommand::class
+        ]);
     }
 
     public function register(): void
