@@ -16,6 +16,7 @@ LaraCache will handle the rest of process automatically. It will create and upda
 
 Manually updating the cache entities of models after dispatching model events (creating, updating and deleting) isn't required, LaraCache manages them in the background and ensures the most up-to-date version of each cache entity.
 
+In addition to the core LaraCache package, I have developed a complementary package called [Nova LaraCache](https://github.com/mostafaznv/nova-laracache). Nova LaraCache seamlessly integrates LaraCache with [Laravel Nova](https://nova.laravel.com), the administration panel for Laravel applications. It offers a user-friendly interface within the Laravel Nova administration panel, enabling users to conveniently moderate and manage cache entities.
 
 
 ----
@@ -122,6 +123,7 @@ Therefore, if you decide to use my packages, please kindly consider making a don
     - [Update Cache](#update-cache)
     - [Delete Cache](#delete-cache)
     - [Group Operations](#group-operations)
+- [Laravel Nova Support](#laravel-nova-support)
 - [Config Properties](#config-properties)
 - [Complete Example](#complete-example)
 
@@ -378,6 +380,13 @@ return [
     ]
 ];
 ```
+
+## Laravel Nova Support
+[Nova LaraCache](https://github.com/mostafaznv/nova-laracache) is a powerful Laravel Nova package that extends the functionalities of LaraCache by integrating it seamlessly with Laravel Nova. It provides an intuitive interface within the Laravel Nova administration panel, allowing users to effortlessly moderate and manage cache entities.
+
+With Nova LaraCache, users can conveniently monitor cache expiration dates, review cache entity contents, regenerate cache items, and delete specific cache entries.
+
+To unlock the cache management capabilities provided by Nova LaraCache, please refer to the installation instructions and consult the LaraCache [documentation](https://github.com/mostafaznv/nova-laracache) for guidance on creating cache entities for each model.
 
 ## Config Properties
 
