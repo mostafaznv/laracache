@@ -5,6 +5,7 @@ namespace Mostafaznv\LaraCache\DTOs;
 use Mostafaznv\LaraCache\Utils\CacheEnum;
 
 /**
+ * @method static self RETRIEVED()
  * @method static self CREATED()
  * @method static self UPDATED()
  * @method static self DELETED()
