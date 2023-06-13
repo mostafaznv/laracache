@@ -8,6 +8,7 @@ use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function() {
     Bus::fake([
@@ -58,6 +59,53 @@ it('will create cache after processing queue', function() {
     expect($before->diffInSeconds($after) >= 1)->toBeTrue()
         ->and($cache->value)->toBeInstanceOf(QueueTestModel::class)
         ->and($cache->value->name)->toBe($model->name)
+        ->and($isCreated)->toBeTrue();
+});
+
+it('will return default value and dispatch cache creation job on retrieving entity [without-model]', function() {
+    Queue::fake();
+    DB::table('test_models')
+        ->insert([
+            'name'       => 'queue-test-name',
+            'content'    => 'content',
+            'created_at' => now()
+        ]);
+
+    $cache = QueueTestModel::cache()->get('latest', true);
+    $isCreating = $cache->status->equals(CacheStatus::CREATING());
+
+    expect($isCreating)->toBeTrue()
+        ->and($cache->value)->toBe(-1);
+
+    expect(Queue::assertPushed(RefreshCache::class));
+});
+
+it('will create cache in background on retrieving entity [without-model]', function() {
+    $name = 'queue-test-name';
+    $before = now();
+
+    DB::table('test_models')
+        ->insert([
+            'name'       => $name,
+            'content'    => 'content',
+            'created_at' => now()
+        ]);
+
+    $cache = QueueTestModel::cache()->get('latest', true);
+    $isCreating = $cache->status->equals(CacheStatus::CREATING());
+
+    expect($isCreating)->toBeTrue()
+        ->and($cache->value)->toBe(-1);
+
+    Artisan::call('queue:work --once');
+
+    $cache = QueueTestModel::cache()->get('latest', true);
+    $isCreated = $cache->status->equals(CacheStatus::CREATED());
+    $after = now();
+
+    expect($before->diffInSeconds($after) >= 1)->toBeTrue()
+        ->and($cache->value)->toBeInstanceOf(QueueTestModel::class)
+        ->and($cache->value->name)->toBe($name)
         ->and($isCreated)->toBeTrue();
 });
 

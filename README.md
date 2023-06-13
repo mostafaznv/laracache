@@ -315,7 +315,7 @@ php artisan laracache:update -m Article -e latest -e featured
 php artisan laracache:update -m Article -m Product
 
 # defines model with full namespace
-php artisan laracache:update -m Domain\Article\Models\Article
+php artisan laracache:update -m "Domain\Article\Models\Article"
 ```
 
 ### Delete Cache
@@ -330,7 +330,7 @@ php artisan laracache:delete -m Article -e latest -e featured
 php artisan laracache:delete -m Article -m Product
 
 # defines model with full namespace
-php artisan laracache:delete -m Domain\Article\Models\Article
+php artisan laracache:delete -m "Domain\Article\Models\Article"
 ```
 
 > **Note**: If you don't specify any entity, all entities will be operated.

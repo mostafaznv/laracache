@@ -9,6 +9,7 @@ use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheEvent;
 use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
+use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 
 trait InteractsWithCache
@@ -162,6 +163,13 @@ trait InteractsWithCache
         $cache = CacheData::fromCache($entity, $this->prefix);
 
         if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+            if ($entity->isQueueable) {
+                $this->initCache($entity, $entity->getTtl());
+                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED());
+
+                return CacheData::fromCache($entity, $this->prefix, $entity->ttl);
+            }
+
             return $this->updateCacheEntity($name, null, $entity);
         }
 
