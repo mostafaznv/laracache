@@ -132,20 +132,20 @@ Therefore, if you decide to use my packages, please kindly consider making a don
 
 ## CacheEntity Methods
 
-| method               | Arguments                               | description                                                                   |
-|----------------------|-----------------------------------------|-------------------------------------------------------------------------------|
-| setDriver            | driver (type: `string`)                 | Specifies custom driver for cache entity                                      |
-| isQueueable          | status (type: `bool`, default: 'true')  | Specifies if cache operation should perform in the background or not          |
-| refreshAfterCreate   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after create a record                   |
-| refreshAfterUpdate   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after update a record                   |
-| refreshAfterDelete   | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after delete a record                   |
-| refreshAfterRestore  | status (type: `bool`, default: `true`)  | Specifies if the cache should refresh after restore a record                  |
-| forever              |                                         | Specifies that the cache should be valid forever                              |
-| validForRestOfDay    |                                         | Specify that cache entity should be valid till end of day                     |
-| validForRestOfWeek   |                                         | Specify that cache entity should be valid till end of week                    |
-| ttl                  | seconds (type: `int`)                   | Specifies cache time to live in second                                        |
-| setDefault           | defaultValue (type: `mixed`)            | Specifies default value for the case that cache entity doesn't have any value |
-| cache                | Closure                                 | **Main** part of each cache entity. defines cache content                     |
+| method               | Arguments                                                                                                                     | description                                                                                                                                                                                                                                                |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| setDriver            | driver (type: `string`)                                                                                                       | Specifies custom driver for cache entity                                                                                                                                                                                                                   |
+| isQueueable          | status (type: `bool`, default: 'true')<br>onConnection (type: `string`, default: '')<br>onQueue (type: `string`, default: '') | This option specifies whether the cache operation should be performed in the background or not.<br>**Note**: By using the `onConnection` and `onQueue` arguments, you have the ability to specify custom connection and queue names for each cache entity. |
+| refreshAfterCreate   | status (type: `bool`, default: `true`)                                                                                        | Specifies if the cache should refresh after create a record                                                                                                                                                                                                |
+| refreshAfterUpdate   | status (type: `bool`, default: `true`)                                                                                        | Specifies if the cache should refresh after update a record                                                                                                                                                                                                |
+| refreshAfterDelete   | status (type: `bool`, default: `true`)                                                                                        | Specifies if the cache should refresh after delete a record                                                                                                                                                                                                |
+| refreshAfterRestore  | status (type: `bool`, default: `true`)                                                                                        | Specifies if the cache should refresh after restore a record                                                                                                                                                                                               |
+| forever              |                                                                                                                               | Specifies that the cache should be valid forever                                                                                                                                                                                                           |
+| validForRestOfDay    |                                                                                                                               | Specify that cache entity should be valid till end of day                                                                                                                                                                                                  |
+| validForRestOfWeek   |                                                                                                                               | Specify that cache entity should be valid till end of week                                                                                                                                                                                                 |
+| ttl                  | seconds (type: `int`)                                                                                                         | Specifies cache time to live in second                                                                                                                                                                                                                     |
+| setDefault           | defaultValue (type: `mixed`)                                                                                                  | Specifies default value for the case that cache entity doesn't have any value                                                                                                                                                                              |
+| cache                | Closure                                                                                                                       | **Main** part of each cache entity. defines cache content                                                                                                                                                                                                  |
 
 
 ## Disable/Enable Cache
@@ -391,14 +391,16 @@ To unlock the cache management capabilities provided by Nova LaraCache, please r
 
 ## Config Properties
 
-| method            | Type                               | description                                                                                                                                                     |
-|-------------------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| driver            | string (default: `null`)           | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`       |
-| laracache-list    | string (default: `laracache.list`) | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)     |
-| first-day-of-week | integer (default: `0`)             | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property |
-| last-day-of-week  | integer (default: `6`)             | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property     |
-| queue             | bool (default: `false`)            | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                              |
-| groups            | array (default: `[]`)              | You can group some entities and perform some operations on them                                                                                                 |
+| method            | Type                               | description                                                                                                                                                                |
+|-------------------|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| driver            | string (default: `null`)           | The default mechanism for handling cache storage.<br>If you keep this option `null`, LaraCache will use the default cache storage from `config/cache.php`                  |
+| laracache-list    | string (default: `laracache.list`) | LaraCache uses a separate list to store name of all entities. using these keys, we can perform some actions to all entities (such as update or delete them)                |
+| first-day-of-week | integer (default: `0`)             | In some regions, saturday is first day of the week and in another regions it may be different. you can change the first day of a week by changing this property            |
+| last-day-of-week  | integer (default: `6`)             | In some regions, friday is last day of the week and in another regions it may be different. you can change the last day of a week by changing this property                |
+| queue.status      | bool (default: `false`)            | Sometimes caching process is very heavy, so you have to queue the process and do it in background.                                                                         |
+| queue.name        | string (default: `default`)        | You have the option to set custom name for the queue process. This name will be used when invoking the `onQueue` method while dispatching the queue job.                   |
+| queue.connection  | string (default: `null`)           | You have the option to set custom connection for the queue process. This connection will be used when invoking the `onConnection` method while dispatching the queue job.  |
+| groups            | array (default: `[]`)              | You can group some entities and perform some operations on them                                                                                                            |
 
 
 ## Complete Example
@@ -437,6 +439,7 @@ class Article extends Model
                 }),
 
             CacheEntity::make('list.week')
+                ->isQueueable(true, 'redis', 'low')
                 ->validForRestOfWeek()
                 ->cache(function() {
                     return Article::query()->latest()->get();

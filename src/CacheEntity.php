@@ -35,6 +35,20 @@ class CacheEntity
     public bool $isQueueable;
 
     /**
+     * Queue name
+     *
+     * @var string
+     */
+    public string $queueName;
+
+    /**
+     * Queue connection
+     *
+     * @var string
+     */
+    public string $queueConnection;
+
+    /**
      * Indicate if cache should exist till end of day
      *
      * @var bool
@@ -103,7 +117,19 @@ class CacheEntity
     {
         $this->name = $name;
         $this->driver = config('laracache.driver') ?? config('cache.default');
-        $this->isQueueable = config('laracache.queue') ?? false;
+
+        $queue = config('laracache.queue');
+
+        if (is_array($queue)) {
+            $this->isQueueable = $queue['status'] ?? false;
+            $this->queueName = $queue['name'] ?? 'default';
+            $this->queueConnection = $queue['connection'] ?? config('queue.default');
+        }
+        else {
+            $this->isQueueable = (bool)$queue;
+            $this->queueName = 'default';
+            $this->queueConnection = config('queue.default');
+        }
     }
 
     /**
@@ -134,11 +160,21 @@ class CacheEntity
      * Specify if cache operation should perform in background or not
      *
      * @param bool $status
+     * @param string $onConnection
+     * @param string $onQueue
      * @return $this
      */
-    public function isQueueable(bool $status = true): CacheEntity
+    public function isQueueable(bool $status = true, string $onConnection = '', string $onQueue = ''): CacheEntity
     {
         $this->isQueueable = $status;
+
+        if ($onConnection) {
+            $this->queueConnection = $onConnection;
+        }
+
+        if ($onQueue) {
+            $this->queueName = $onQueue;
+        }
 
         return $this;
     }

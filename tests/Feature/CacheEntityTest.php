@@ -28,10 +28,20 @@ it('will set driver if laracache.driver is set', function() {
     expect($entity->driver)->toBe('fake-driver');
 });
 
-it('will set is queueable by default', function() {
+it('will set is-queueable by default if laracache.queue is boolean', function() {
     expect($this->entity->isQueueable)->toBeFalse();
 
     config()->set('laracache.queue', true);
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->isQueueable)->toBeTrue();
+});
+
+it('will set is-queueable by default', function() {
+    expect($this->entity->isQueueable)->toBeFalse();
+
+    config()->set('laracache.queue.status', true);
 
     $entity = CacheEntity::make('test-name');
 
@@ -46,6 +56,44 @@ it('will set custom queue status', function() {
 
     $this->entity->isQueueable(false);
     expect($this->entity->isQueueable)->toBeFalse();
+});
+
+it('will set queue name and connection by default', function() {
+    expect($this->entity->queueName)->toBe('default')
+        ->and($this->entity->queueConnection)->toBe('database');
+});
+
+it('will set queue name and connection by default with deprecated config file', function() {
+    config()->set('laracache.queue', true);
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->queueName)->toBe('default')
+        ->and($entity->queueConnection)->toBe('database');
+});
+
+it('will set custom queue name and connection using config file', function() {
+    expect($this->entity->queueName)->toBe('default')
+        ->and($this->entity->queueConnection)->toBe('database');
+
+    config()->set('laracache.queue.name', 'test-queue');
+    config()->set('laracache.queue.connection', 'test-connection');
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->queueName)->toBe('test-queue')
+        ->and($entity->queueConnection)->toBe('test-connection');
+});
+
+it('will set custom queue name and connection using entity method', function() {
+    expect($this->entity->queueName)->toBe('default')
+        ->and($this->entity->queueConnection)->toBe('database');
+
+    $entity = CacheEntity::make('test-name')
+    ->isQueueable(true, 'test-connection', 'test-queue');
+
+    expect($entity->queueName)->toBe('test-queue')
+        ->and($entity->queueConnection)->toBe('test-connection');
 });
 
 it('will set specific driver for entity', function() {
