@@ -23,7 +23,7 @@ class UpdateLaraCacheModelsList implements ShouldQueue
         $this->driver = config('laracache.driver') ?: config('cache.default');
         $this->key = self::LARACACHE_MODELS_LIST;
 
-        $this->connection = config('laracache.queue.connection', 'default');
+        $this->connection = config('laracache.queue.connection', config('queue.default'));
         $this->queue = config('laracache.queue.name', 'default');
     }
 
