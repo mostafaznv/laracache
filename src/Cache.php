@@ -61,7 +61,10 @@ class Cache
             foreach ($this->model::cacheEntities() as $entity) {
                 if ($entity->isQueueable) {
                     $this->initCache($entity, $entity->getTtl());
-                    RefreshCache::dispatch($this->model, $entity->name, $event);
+
+                    RefreshCache::dispatch($this->model, $entity->name, $event)
+                        ->onConnection($entity->queueConnection)
+                        ->onQueue($entity->queueName);
                 }
                 else {
                     $this->updateCacheEntity($entity->name, $event, $entity);

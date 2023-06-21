@@ -17,9 +17,7 @@ class RefreshCache implements ShouldQueue
         private string     $model,
         private string     $name,
         private CacheEvent $event
-    ) {
-        $this->queue = config('laracache.queue-name');
-    }
+    ) {}
 
     public function handle(): void
     {

@@ -165,7 +165,10 @@ trait InteractsWithCache
         if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
             if ($entity->isQueueable) {
                 $this->initCache($entity, $entity->getTtl());
-                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED());
+
+                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED())
+                    ->onConnection($entity->queueConnection)
+                    ->onQueue($entity->queueName);
 
                 return CacheData::fromCache($entity, $this->prefix, $entity->ttl);
             }

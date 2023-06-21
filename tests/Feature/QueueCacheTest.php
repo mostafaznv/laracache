@@ -10,7 +10,7 @@ use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-beforeEach(function () {
+beforeEach(function() {
     Bus::fake([
         UpdateLaraCacheModelsList::class
     ]);
@@ -20,33 +20,35 @@ beforeEach(function () {
     }
 });
 
-it('will initiate cache object with CREATING status', function () {
+it('will initiate cache object with CREATING status', function() {
     $cache = QueueTestModel::cache()->get('latest', true);
     $isCreating = $cache->status->equals(CacheStatus::CREATING());
 
     expect($isCreating)->toBeTrue();
 });
 
-it('will initiate cache object with entity default value', function () {
+it('will initiate cache object with entity default value', function() {
     $cache = QueueTestModel::cache()->get('latest', true);
 
     expect($cache->value)->toBe(-1);
 });
 
-it('will initiate cache object with properly expiration ttl', function () {
+it('will initiate cache object with properly expiration ttl', function() {
     $cache = QueueTestModel::cache()->get('latest', true);
 
     expect(is_null($cache->expiration))->toBeFalse();
 });
 
-it('will dispatch refresh-cache [without-model]', function () {
+it('will dispatch refresh-cache [without-model]', function() {
     Queue::fake();
     createQueueModel();
 
-    expect(Queue::assertPushedOn(config('laracache.queue-name'), RefreshCache::class));
+    $onQueue = config('laracache.queue.name');
+
+    Queue::assertPushedOn($onQueue, RefreshCache::class);
 });
 
-it('will create cache after processing queue', function () {
+it('will create cache after processing queue', function() {
     $before = now();
 
     $model = createQueueModel();
@@ -62,12 +64,12 @@ it('will create cache after processing queue', function () {
         ->and($isCreated)->toBeTrue();
 });
 
-it('will return default value and dispatch cache creation job on retrieving entity [without-model]', function () {
+it('will return default value and dispatch cache creation job on retrieving entity [without-model]', function() {
     Queue::fake();
     DB::table('test_models')
         ->insert([
-            'name' => 'queue-test-name',
-            'content' => 'content',
+            'name'       => 'queue-test-name',
+            'content'    => 'content',
             'created_at' => now()
         ]);
 
@@ -77,17 +79,19 @@ it('will return default value and dispatch cache creation job on retrieving enti
     expect($isCreating)->toBeTrue()
         ->and($cache->value)->toBe(-1);
 
-    expect(Queue::assertPushedOn(config('laracache.queue-name'), RefreshCache::class));
+    $onQueue = config('laracache.queue.name');
+
+    Queue::assertPushedOn($onQueue, RefreshCache::class);
 });
 
-it('will create cache in background on retrieving entity [without-model]', function () {
+it('will create cache in background on retrieving entity [without-model]', function() {
     $name = 'queue-test-name';
     $before = now();
 
     DB::table('test_models')
         ->insert([
-            'name' => $name,
-            'content' => 'content',
+            'name'       => $name,
+            'content'    => 'content',
             'created_at' => now()
         ]);
 
@@ -109,7 +113,7 @@ it('will create cache in background on retrieving entity [without-model]', funct
         ->and($isCreated)->toBeTrue();
 });
 
-it('will change cache status to creating on model update [without-model]', function () {
+it('will change cache status to creating on model update [without-model]', function() {
     $model = createQueueModel();
 
     $cache = QueueTestModel::cache()->get('latest', true);
@@ -141,7 +145,7 @@ it('will change cache status to creating on model update [without-model]', funct
         ->and($cache->value->name)->toBe('new name');
 });
 
-it('will return old cache until queue process of updating model is done [without-model]', function () {
+it('will return old cache until queue process of updating model is done [without-model]', function() {
     $model = createQueueModel('old-name');
 
     $cache = QueueTestModel::cache()->get('latest');
