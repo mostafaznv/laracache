@@ -15,7 +15,7 @@ if (!function_exists('week_ending_seconds')) {
         $end = $now->clone()->addWeeks($weeks);
         $end = $end->endOfWeek(config('laracache.last-day-of-week'));
 
-        return $end->endOfDay()->diffInSeconds($now);
+        return $end->endOfDay()->diffInSeconds($now, true);
     }
 }
 
@@ -33,6 +33,6 @@ if (!function_exists('day_ending_seconds')) {
         $now = now();
         $end = $now->clone()->addDays($days);
 
-        return $end->endOfDay()->diffInSeconds($now);
+        return $end->endOfDay()->diffInSeconds($now, true);
     }
 }
