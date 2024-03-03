@@ -7,20 +7,17 @@ use Illuminate\Support\Facades\Queue;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function() {
     Bus::fake([
         UpdateLaraCacheModelsList::class
     ]);
-
-    if (!Str::contains($this->getName(), '[without-model]')) {
-        createQueueModel();
-    }
 });
 
 it('will initiate cache object with CREATING status', function() {
+    createQueueModel();
+
     $cache = QueueTestModel::cache()->get('latest', true);
     $isCreating = $cache->status->equals(CacheStatus::CREATING());
 
@@ -28,18 +25,22 @@ it('will initiate cache object with CREATING status', function() {
 });
 
 it('will initiate cache object with entity default value', function() {
+    createQueueModel();
+
     $cache = QueueTestModel::cache()->get('latest', true);
 
     expect($cache->value)->toBe(-1);
 });
 
 it('will initiate cache object with properly expiration ttl', function() {
+    createQueueModel();
+
     $cache = QueueTestModel::cache()->get('latest', true);
 
     expect(is_null($cache->expiration))->toBeFalse();
 });
 
-it('will dispatch refresh-cache [without-model]', function() {
+it('will dispatch refresh-cache', function() {
     Queue::fake();
     createQueueModel();
 
@@ -49,6 +50,7 @@ it('will dispatch refresh-cache [without-model]', function() {
 });
 
 it('will create cache after processing queue', function() {
+    createQueueModel();
     $before = now();
 
     $model = createQueueModel();
@@ -64,7 +66,7 @@ it('will create cache after processing queue', function() {
         ->and($isCreated)->toBeTrue();
 });
 
-it('will return default value and dispatch cache creation job on retrieving entity [without-model]', function() {
+it('will return default value and dispatch cache creation job on retrieving entity', function() {
     Queue::fake();
     DB::table('test_models')
         ->insert([
@@ -84,7 +86,7 @@ it('will return default value and dispatch cache creation job on retrieving enti
     Queue::assertPushedOn($onQueue, RefreshCache::class);
 });
 
-it('will create cache in background on retrieving entity [without-model]', function() {
+it('will create cache in background on retrieving entity', function() {
     $name = 'queue-test-name';
     $before = now();
 
@@ -113,7 +115,7 @@ it('will create cache in background on retrieving entity [without-model]', funct
         ->and($isCreated)->toBeTrue();
 });
 
-it('will change cache status to creating on model update [without-model]', function() {
+it('will change cache status to creating on model update', function() {
     $model = createQueueModel();
 
     $cache = QueueTestModel::cache()->get('latest', true);
@@ -145,7 +147,7 @@ it('will change cache status to creating on model update [without-model]', funct
         ->and($cache->value->name)->toBe('new name');
 });
 
-it('will return old cache until queue process of updating model is done [without-model]', function() {
+it('will return old cache until queue process of updating model is done', function() {
     $model = createQueueModel('old-name');
 
     $cache = QueueTestModel::cache()->get('latest');
