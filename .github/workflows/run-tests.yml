@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.0, 8.1, 8.2, 8.3]
+        php: [8.0, 8.1, 8.2, 8.3, 8.4]
         laravel: ['8.*', '9.*', '10.*', '11.*']
         coverage: [none]
         dependency-version: [prefer-stable]
@@ -40,7 +40,7 @@ jobs:
         run: sudo apt-get update --fix-missing
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Cache dependencies
         uses: actions/cache@v2
