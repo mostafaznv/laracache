@@ -96,6 +96,89 @@ it('will set custom queue name and connection using entity method', function() {
         ->and($entity->queueConnection)->toBe('test-connection');
 });
 
+it('will set debounce status property false by default', function() {
+    expect($this->entity->debounce)->toBeFalse();
+});
+
+it('will set custom value for debounce status property using config file', function() {
+    # true
+    config()->set('laracache.debounce.status', true);
+
+    $entity = CacheEntity::make('test-name');
+    expect($entity->debounce)->toBeTrue();
+
+
+    # false
+    config()->set('laracache.debounce.status', false);
+
+    $entity = CacheEntity::make('test-name');
+    expect($entity->debounce)->toBeFalse();
+});
+
+it('will set custom value for debounce status property using entity methods', function() {
+    # true
+    $this->entity->shouldDebounce();
+    expect($this->entity->debounce)->toBeTrue();
+
+    # false
+    $this->entity->shouldDebounce(false);
+    expect($this->entity->debounce)->toBeFalse();
+});
+
+it('will set debounce wait-time property false by default', function() {
+    expect($this->entity->debounceWaitTime)->toBe(5);
+});
+
+it('will set custom value for debounce wait-time property using config file', function() {
+    config()->set('laracache.debounce.wait', 13);
+
+    $entity = CacheEntity::make('test-name');
+    expect($entity->debounceWaitTime)->toBe(13);
+});
+
+it('will set custom value for debounce wait-time property using entity methods', function() {
+    $this->entity->shouldDebounce(true, 13);
+    expect($this->entity->debounceWaitTime)->toBe(13);
+});
+
+it('will disable debounce status when wait-time property in config-file is negative or zero', function() {
+    config()->set('laracache.debounce.status', true);
+    config()->set('laracache.debounce.wait', 0);
+
+    $status = config('laracache.debounce.status');
+    expect($status)->toBeTrue();
+});
+
+it('will disable debounce status when wait-time property of cache entity is negative or zero', function() {
+    $this->entity->shouldDebounce(true, 0);
+
+    expect($this->entity->debounce)->toBeFalse();
+});
+
+it('will set custom debounce queue name and connection using config file', function() {
+    expect($this->entity->debounceQueueName)->toBe('default')
+        ->and($this->entity->debounceQueueConnection)->toBe('database');
+
+    config()->set('laracache.debounce.queue.name', 'test-queue');
+    config()->set('laracache.debounce.queue.connection', 'test-connection');
+
+    $entity = CacheEntity::make('test-name');
+
+    expect($entity->debounceQueueName)->toBe('test-queue')
+        ->and($entity->debounceQueueConnection)->toBe('test-connection');
+});
+
+it('will set custom debounce queue name and connection using entity method', function() {
+    expect($this->entity->debounceQueueName)->toBe('default')
+        ->and($this->entity->debounceQueueConnection)->toBe('database');
+
+    $entity = CacheEntity::make('test-name')
+        ->shouldDebounce(true, 12, 'test-connection', 'test-queue');
+
+    expect($entity->debounceQueueName)->toBe('test-queue')
+        ->and($entity->debounceQueueConnection)->toBe('test-connection');
+});
+
 it('will set specific driver for entity', function() {
     expect($this->entity->driver)->toBe('array');
 

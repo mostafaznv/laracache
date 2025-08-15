@@ -6,6 +6,7 @@ use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\DTOs\CacheEvent;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Traits\InteractsWithCache;
+use Mostafaznv\LaraCache\Utils\RefreshDebouncer;
 
 class Cache
 {
@@ -59,7 +60,18 @@ class Cache
             $this->updateLaraCacheModelsList();
 
             foreach ($this->model::cacheEntities() as $entity) {
-                if ($entity->isQueueable) {
+                if ($entity->debounce) {
+                    $this->initCache($entity, $entity->getTtl());
+
+                    RefreshDebouncer::dispatch(
+                        model: $this->model,
+                        name: $entity->name,
+                        queueConnection: $entity->queueConnection,
+                        queueName: $entity->queueName,
+                        wait: $entity->debounceWaitTime
+                    );
+                }
+                else if ($entity->isQueueable) {
                     $this->initCache($entity, $entity->getTtl());
 
                     RefreshCache::dispatch($this->model, $entity->name, $event)
