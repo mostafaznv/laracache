@@ -1,6 +1,7 @@
 <?php
 
 use Mostafaznv\LaraCache\Tests\TestCase;
+use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\DebounceTestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
@@ -31,6 +32,16 @@ function createQueueModel(?string $name = null): QueueTestModel
 {
     $model = new QueueTestModel();
     $model->name = $name ?? 'queue-test-name';
+    $model->content = 'content';
+    $model->save();
+
+    return $model;
+}
+
+function createDebounceModel(?string $name = null): DebounceTestModel
+{
+    $model = new DebounceTestModel;
+    $model->name = $name ?? 'debounce-test-name';
     $model->content = 'content';
     $model->save();
 

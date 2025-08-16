@@ -48,6 +48,37 @@ class CacheEntity
      */
     public string $queueConnection;
 
+
+    /**
+     * Indicate if cache should debounce
+     *
+     * @var bool
+     */
+    public bool $debounce = false;
+
+    /**
+     * Debounce time in seconds
+     * debounce = 0 means the debouncing is disabled
+     *
+     * @var int
+     */
+    public int $debounceWaitTime = 0;
+
+    /**
+     * Debounce queue name
+     *
+     * @var string
+     */
+    public string $debounceQueueName;
+
+    /**
+     * Debounce queue connection
+     *
+     * @var string
+     */
+    public string $debounceQueueConnection;
+
+
     /**
      * Indicate if cache should exist till end of day
      *
@@ -119,6 +150,7 @@ class CacheEntity
         $this->driver = config('laracache.driver') ?? config('cache.default');
 
         $queue = config('laracache.queue');
+        $debounce = config('laracache.debounce');
 
         if (is_array($queue)) {
             $this->isQueueable = $queue['status'] ?? false;
@@ -130,6 +162,13 @@ class CacheEntity
             $this->queueName = 'default';
             $this->queueConnection = config('queue.default');
         }
+
+        $debounceWaitTime = $debounce['wait'] ?? 5;
+
+        $this->debounce = $debounceWaitTime > 0 ? ($debounce['status'] ?? false) : false;
+        $this->debounceWaitTime = $debounceWaitTime;
+        $this->debounceQueueName = $debounce['queue']['name'] ?? 'default';
+        $this->debounceQueueConnection = $debounce['queue']['connection'] ?? config('queue.default');
     }
 
     /**
@@ -175,6 +214,33 @@ class CacheEntity
         if ($onQueue) {
             $this->queueName = $onQueue;
         }
+
+        return $this;
+    }
+
+
+    /**
+     * Specify if cache should debounce
+     *
+     * @param bool $status
+     * @param int $waitTime
+     * @param string $onConnection
+     * @param string $onQueue
+     * @return $this
+     */
+    public function debounce(bool $status = true, int $waitTime = 5, string $onConnection = '', string $onQueue = ''): CacheEntity
+    {
+        $this->debounceWaitTime = max($waitTime, 0);
+        $this->debounce = $waitTime > 0 ? $status : false;
+
+        if ($onConnection) {
+            $this->debounceQueueConnection = $onConnection;
+        }
+
+        if ($onQueue) {
+            $this->debounceQueueName = $onQueue;
+        }
+
 
         return $this;
     }
