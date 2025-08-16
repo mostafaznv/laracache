@@ -117,11 +117,11 @@ it('will set custom value for debounce status property using config file', funct
 
 it('will set custom value for debounce status property using entity methods', function() {
     # true
-    $this->entity->shouldDebounce();
+    $this->entity->debounce();
     expect($this->entity->debounce)->toBeTrue();
 
     # false
-    $this->entity->shouldDebounce(false);
+    $this->entity->debounce(false);
     expect($this->entity->debounce)->toBeFalse();
 });
 
@@ -137,7 +137,7 @@ it('will set custom value for debounce wait-time property using config file', fu
 });
 
 it('will set custom value for debounce wait-time property using entity methods', function() {
-    $this->entity->shouldDebounce(true, 13);
+    $this->entity->debounce(true, 13);
     expect($this->entity->debounceWaitTime)->toBe(13);
 });
 
@@ -150,7 +150,7 @@ it('will disable debounce status when wait-time property in config-file is negat
 });
 
 it('will disable debounce status when wait-time property of cache entity is negative or zero', function() {
-    $this->entity->shouldDebounce(true, 0);
+    $this->entity->debounce(true, 0);
 
     expect($this->entity->debounce)->toBeFalse();
 });
@@ -173,7 +173,7 @@ it('will set custom debounce queue name and connection using entity method', fun
         ->and($this->entity->debounceQueueConnection)->toBe('database');
 
     $entity = CacheEntity::make('test-name')
-        ->shouldDebounce(true, 12, 'test-connection', 'test-queue');
+        ->debounce(true, 12, 'test-connection', 'test-queue');
 
     expect($entity->debounceQueueName)->toBe('test-queue')
         ->and($entity->debounceQueueConnection)->toBe('test-connection');

@@ -228,7 +228,7 @@ class CacheEntity
      * @param string $onQueue
      * @return $this
      */
-    public function shouldDebounce(bool $status = true, int $waitTime = 5, string $onConnection = '', string $onQueue = ''): CacheEntity
+    public function debounce(bool $status = true, int $waitTime = 5, string $onConnection = '', string $onQueue = ''): CacheEntity
     {
         $this->debounceWaitTime = max($waitTime, 0);
         $this->debounce = $waitTime > 0 ? $status : false;

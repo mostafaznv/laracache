@@ -20,7 +20,7 @@ class DebounceTestModel extends Model
         return [
             CacheEntity::make('latest.debounce')
                 ->validForRestOfDay()
-                ->shouldDebounce()
+                ->debounce()
                 ->setDefault(-1)
                 ->cache(function() {
                     return DebounceTestModel::query()->latest()->first();
