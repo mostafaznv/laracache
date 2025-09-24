@@ -130,7 +130,7 @@ trait InteractsWithCache
         UpdateLaraCacheModelsList::dispatch($this->model);
     }
 
-    private function updateCacheEntity(string $name, ?CacheEvent $event = null, CacheEntity $entity = null): CacheData
+    private function updateCacheEntity(string $name, ?CacheEvent $event = null, ?CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
 
@@ -147,7 +147,7 @@ trait InteractsWithCache
         return CacheData::fromCache($entity, $this->prefix);
     }
 
-    private function deleteCacheEntity(string $name, bool $deleteForever = false, CacheEntity $entity = null): CacheData
+    private function deleteCacheEntity(string $name, bool $deleteForever = false, ?CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
         $ttl = !$deleteForever ? $entity->getTtl() : 0;

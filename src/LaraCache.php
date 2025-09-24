@@ -16,7 +16,7 @@ class LaraCache
      *
      * @return mixed
      */
-    public function update(mixed $model, string $name, string $event = '', CacheEntity $entity = null): mixed
+    public function update(mixed $model, string $name, string $event = '', ?CacheEntity $entity = null): mixed
     {
         return $model::cache()->update($name, $event, $entity);
     }
