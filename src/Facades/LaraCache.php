@@ -7,7 +7,7 @@ use Mostafaznv\LaraCache\CacheEntity;
 
 
 /**
- * @method static update(mixed $model, string $name, string $event = '', CacheEntity $entity = null)
+ * @method static update(mixed $model, string $name, string $event = '', ?CacheEntity $entity = null)
  * @method static updateAll(mixed $model = null)
  * @method static delete(mixed $model, string $name, bool $forever = false)
  * @method static deleteAll(mixed $model = null, bool $forever = false)
