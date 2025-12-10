@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.0, 8.1, 8.2, 8.3, 8.4]
+        php: [8.0, 8.1, 8.2, 8.3, 8.4, 8.5]
         laravel: ['8.*', '9.*', '10.*', '11.*', '12.*']
         coverage: [none]
         dependency-version: [prefer-stable]
@@ -65,7 +65,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if [ "${{ matrix.laravel }}" = "11.*" ] && [ "${{ matrix.php }}" = "8.5" ]; then
+          composer require "phpunit/phpunit:^12" "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          fi
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
