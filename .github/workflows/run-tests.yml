@@ -24,7 +24,7 @@ jobs:
           - laravel: 8.*
             testbench: 6.*
           - laravel: 11.*
-            testbench: 9.15.0
+            testbench: 9.*
           - laravel: 12.*
             testbench: 10.*
         exclude:
@@ -65,7 +65,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if [ "${{ matrix.laravel }}" = "11.*" ] && [ "${{ matrix.php }}" = "8.5" ]; then
+          composer require "phpunit/phpunit:^12" "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          fi
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
