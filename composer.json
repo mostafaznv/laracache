@@ -8,10 +8,8 @@
         "cache",
         "redis",
         "memcache",
-        "laravel 8",
-        "laravel 9",
-        "nova 4",
-        "mostafaznv"
+        "nova",
+        "laravel nova"
     ],
     "license": "MIT",
     "support": {
