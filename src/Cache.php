@@ -12,6 +12,7 @@ class Cache
 {
     use InteractsWithCache;
 
+
     public function get(string $name, bool $withCacheData = false): mixed
     {
         $cache = $this->retrieve($name);
@@ -35,10 +36,7 @@ class Cache
         $this->updateLaraCacheModelsList();
 
         foreach ($this->model::cacheEntities() as $entity) {
-            $this->updateCacheEntity(
-                name: $entity->name,
-                entity: $entity
-            );
+            $this->updateCacheEntity($entity->name, entity: $entity);
         }
     }
 

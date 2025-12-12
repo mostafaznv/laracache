@@ -49,11 +49,17 @@ trait InteractsWithCache
 
     private function entityIsCallable(CacheEntity $entity, ?CacheEvent $event = null): bool
     {
-        return is_null($event)
-            or ($event === CacheEvent::CREATED and $entity->refreshAfterCreate)
-            or ($event === CacheEvent::UPDATED and $entity->refreshAfterUpdate)
-            or ($event === CacheEvent::DELETED and $entity->refreshAfterDelete)
-            or ($event === CacheEvent::RESTORED and $entity->refreshAfterRestore);
+        if ($event === null) {
+            return true;
+        }
+
+        return match ($event) {
+            CacheEvent::CREATED   => $entity->refreshAfterCreate,
+            CacheEvent::UPDATED   => $entity->refreshAfterUpdate,
+            CacheEvent::DELETED   => $entity->refreshAfterDelete,
+            CacheEvent::RESTORED  => $entity->refreshAfterRestore,
+            CacheEvent::RETRIEVED => false,
+        };
     }
 
     private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
@@ -62,7 +68,7 @@ trait InteractsWithCache
             return CacheData::make(CacheStatus::DELETED, $ttl, $entity->default);
         }
 
-        $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
+        $value = $entity->cacheClosure ? ($entity->cacheClosure)() : $entity->default;
 
         return CacheData::make(
             status: CacheStatus::CREATED,
@@ -97,7 +103,7 @@ trait InteractsWithCache
 
     private function putCacheIntoCacheStorage(CacheData $cache, string $driver, string $name, int $ttl): bool
     {
-        if (is_null($cache->expiration)) {
+        if ($cache->expiration === null) {
             return Cache::store($driver)->forever($name, $cache);
         }
 
@@ -151,7 +157,7 @@ trait InteractsWithCache
     private function deleteCacheEntity(string $name, bool $deleteForever = false, ?CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
-        $ttl = !$deleteForever ? $entity->getTtl() : 0;
+        $ttl = $deleteForever ? 0 : $entity->getTtl();
         $cache = $this->callCacheClosure($entity, $ttl, true);
         $this->storeCache($cache, $entity, $ttl);
 
