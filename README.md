@@ -41,7 +41,7 @@ To install LaraCache on older Laravel/PHP versions, consult the compatibility ta
 | Laravel Version | PHP Version   | LaraCache Version                                           |
 |-----------------|---------------|-------------------------------------------------------------|
 | 8.40.0 — 12.x   | 8.0.2 — 8.5   | [2.5.2](https://github.com/mostafaznv/laracache/tree/2.5.2) |
-| 12.x            | 8.3 or higher | master (3.*)                                                |
+| 12.x            | 8.3 or higher | master (3.x)                                                |
 
 ## Installation
 
