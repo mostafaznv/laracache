@@ -1,18 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Cache;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 use Mostafaznv\LaraCache\Facades\LaraCache;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 use function Spatie\PestPluginTestTime\testTime;
 
+
 beforeEach(function() {
     testTime()->freeze('2022-05-17 12:43:34');
 
     $this->model = createModel();
 });
+
 
 it('will throw exception if entity name is not defined during deleting cache', function() {
     $this->expectException(CacheEntityDoesNotExist::class);
@@ -61,11 +63,16 @@ it('will delete cache manually', function() {
     $latestCache = TestModel::cache()->get('latest', true);
     $dayCache = TestModel::cache()->get('list.day', true);
 
-    expect($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache->value)->toBeNull()
-        ->and($latestCache->expiration)->toBeNull()
-        ->and($dayCache->value)->toBeNull()
-        ->and($dayCache->expiration)->toBe(1652831999);
+    expect($latestCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache->value)
+        ->toBeNull()
+        ->and($latestCache->expiration)
+        ->toBeNull()
+        ->and($dayCache->value)
+        ->toBeNull()
+        ->and($dayCache->expiration)
+        ->toBe(1652831999);
 });
 
 it('will delete cache manually using facade', function() {
@@ -81,12 +88,18 @@ it('will delete cache manually using facade', function() {
     $latestCache = LaraCache::retrieve(TestModel::class, 'latest', true);
     $dayCache = LaraCache::retrieve(TestModel::class, 'list.day', true);
 
-    expect($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache->value)->toBeNull()
-        ->and($latestCache->expiration)->toBeNull()
-        ->and($dayCache->status->equals(CacheStatus::DELETED()))
-        ->and($dayCache->value)->toBeNull()
-        ->and($dayCache->expiration)->toBe(1652831999);
+    expect($latestCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache->value)
+        ->toBeNull()
+        ->and($latestCache->expiration)
+        ->toBeNull()
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache->value)
+        ->toBeNull()
+        ->and($dayCache->expiration)
+        ->toBe(1652831999);
 });
 
 it('will delete cache manually forever', function() {
@@ -102,10 +115,14 @@ it('will delete cache manually forever', function() {
     $weekCache = TestModel::cache()->get('list.week', true);
     $dayCache = TestModel::cache()->get('list.day', true);
 
-    expect($weekCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache->expiration)->toBe(1653177599)
-        ->and($dayCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache->expiration)->toBeNull();
+    expect($weekCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache->expiration)
+        ->toBe(1653177599)
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache->expiration)
+        ->toBeNull();
 });
 
 it('will delete cache manually forever using facade', function() {
@@ -121,24 +138,30 @@ it('will delete cache manually forever using facade', function() {
     $weekCache = LaraCache::retrieve(TestModel::class, 'list.week', true);
     $dayCache = LaraCache::retrieve(TestModel::class, 'list.day', true);
 
-    expect($weekCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache->expiration)->toBe(1653177599)
-        ->and($dayCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache->expiration)->toBeNull();
+    expect($weekCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache->expiration)
+        ->toBe(1653177599)
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache->expiration)
+        ->toBeNull();
 });
 
 it('will return default value after deleting cache item', function() {
     $cache = TestModel::cache()->get('static.number', true);
-
-    expect($cache->status->equals(CacheStatus::CREATED()))->toBeTrue()
-        ->and($cache->value)->toBe(1);
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATED)
+        ->and($cache->value)
+        ->toBe(1);
 
     TestModel::cache()->delete('static.number');
 
     $cache = TestModel::cache()->get('static.number', true);
-
-    expect($cache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($cache->value)->toBe('default-value');
+    expect($cache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($cache->value)
+        ->toBe('default-value');
 });
 
 it('will not delete other entities during deleting an entity manually', function() {
@@ -153,10 +176,14 @@ it('will not delete other entities during deleting an entity manually', function
     $latestCache = TestModel::cache()->get('latest', true);
     $dayCache = TestModel::cache()->get('list.day', true);
 
-    expect($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache->value)->toBeNull()
-        ->and($dayCache->status->equals(CacheStatus::CREATED()))->toBeTrue()
-        ->and($dayCache->value)->toHaveCount(1);
+    expect($latestCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache->value)
+        ->toBeNull()
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::CREATED)
+        ->and($dayCache->value)
+        ->toHaveCount(1);
 });
 
 it('will delete all cache entities of a model', function() {
@@ -164,25 +191,41 @@ it('will delete all cache entities of a model', function() {
     $dayCache = TestModel::cache()->get('list.day', true);
     $latestCache = TestModel::cache()->get('latest', true);
 
-    expect($weekCache->expiration)->toBe(1653177599)
-        ->and($dayCache->expiration)->toBe(1652831999)
-        ->and($latestCache->expiration)->toBeNull();
+    expect($weekCache->expiration)
+        ->toBe(1653177599)
+        ->and($dayCache->expiration)
+        ->toBe(1652831999)
+        ->and($latestCache->expiration)
+        ->toBeNull();
+
 
     TestModel::cache()->deleteAll();
+
 
     $weekCache = TestModel::cache()->get('list.week', true);
     $dayCache = TestModel::cache()->get('list.day', true);
     $latestCache = TestModel::cache()->get('latest', true);
 
-    expect($weekCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache->expiration)->toBe(1653177599)
-        ->and($weekCache->value)->toBeNull()
-        ->and($dayCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache->expiration)->toBe(1652831999)
-        ->and($dayCache->value)->toBeNull()
-        ->and($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache->expiration)->toBeNull()
-        ->and($dayCache->value)->toBeNull();
+    expect($weekCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache->expiration)
+        ->toBe(1653177599)
+        ->and($weekCache->value)
+        ->toBeNull()
+        # day
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache->expiration)
+        ->toBe(1652831999)
+        ->and($dayCache->value)
+        ->toBeNull()
+        # latest
+        ->and($latestCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache->expiration)
+        ->toBeNull()
+        ->and($latestCache->value)
+        ->toBeNull();
 });
 
 it('will delete all cache entities of a model using facade', function() {
@@ -200,15 +243,26 @@ it('will delete all cache entities of a model using facade', function() {
     $dayCache = LaraCache::retrieve(TestModel::class, 'list.day', true);
     $latestCache = LaraCache::retrieve(TestModel::class, 'latest', true);
 
-    expect($weekCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache->expiration)->toBe(1653177599)
-        ->and($weekCache->value)->toBeNull()
-        ->and($dayCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache->expiration)->toBe(1652831999)
-        ->and($dayCache->value)->toBeNull()
-        ->and($latestCache->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache->expiration)->toBeNull()
-        ->and($dayCache->value)->toBeNull();
+    expect($weekCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache->expiration)
+        ->toBe(1653177599)
+        ->and($weekCache->value)
+        ->toBeNull()
+        # day
+        ->and($dayCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache->expiration)
+        ->toBe(1652831999)
+        ->and($dayCache->value)
+        ->toBeNull()
+        # latest
+        ->and($latestCache->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache->expiration)
+        ->toBeNull()
+        ->and($latestCache->value)
+        ->toBeNull();
 });
 
 it('will delete all cache entities of a model forever', function() {
@@ -277,24 +331,42 @@ it('will delete all cache entities that stored with laracache', function() {
     $dayCache2 = LaraCache::retrieve(TestModel2::class, 'list.day', true);
     $latestCache2 = LaraCache::retrieve(TestModel2::class, 'latest', true);
 
-    expect($weekCache1->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache1->expiration)->toBe(1653177599)
-        ->and($weekCache1->value)->toBeNull()
-        ->and($dayCache1->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache1->expiration)->toBe(1652831999)
-        ->and($dayCache1->value)->toBeNull()
-        ->and($latestCache1->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache1->expiration)->toBeNull()
-        ->and($dayCache1->value)->toBeNull()
-        ->and($weekCache2->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($weekCache2->expiration)->toBe(1653177599)
-        ->and($weekCache2->value)->toBeNull()
-        ->and($dayCache2->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($dayCache2->expiration)->toBe(1652831999)
-        ->and($dayCache2->value)->toBeNull()
-        ->and($latestCache2->status->equals(CacheStatus::DELETED()))->toBeTrue()
-        ->and($latestCache2->expiration)->toBeNull()
-        ->and($dayCache2->value)->toBeNull();
+    expect($weekCache1->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache1->expiration)
+        ->toBe(1653177599)
+        ->and($weekCache1->value)
+        ->toBeNull()
+        ->and($dayCache1->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache1->expiration)
+        ->toBe(1652831999)
+        ->and($dayCache1->value)
+        ->toBeNull()
+        ->and($latestCache1->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache1->expiration)
+        ->toBeNull()
+        ->and($dayCache1->value)
+        ->toBeNull()
+        ->and($weekCache2->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($weekCache2->expiration)
+        ->toBe(1653177599)
+        ->and($weekCache2->value)
+        ->toBeNull()
+        ->and($dayCache2->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($dayCache2->expiration)
+        ->toBe(1652831999)
+        ->and($dayCache2->value)
+        ->toBeNull()
+        ->and($latestCache2->status)
+        ->toBe(CacheStatus::DELETED)
+        ->and($latestCache2->expiration)
+        ->toBeNull()
+        ->and($dayCache2->value)
+        ->toBeNull();
 });
 
 it('will delete all cache entities that stored with laracache forever', function() {

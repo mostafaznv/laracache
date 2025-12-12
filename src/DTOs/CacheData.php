@@ -5,14 +5,17 @@ namespace Mostafaznv\LaraCache\DTOs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mostafaznv\LaraCache\CacheEntity;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
+
 
 class CacheData
 {
     public function __construct(
         public CacheStatus $status,
         public ?int        $expiration,
-        public mixed       $value
+        public mixed       $value,
     ) {}
+
 
     public static function make(CacheStatus $status, int $ttl, mixed $value): self
     {
@@ -27,7 +30,7 @@ class CacheData
         $value = Cache::store($entity->driver)->get($name, $entity->default);
 
         if ($value === $entity->default) {
-            return self::make(CacheStatus::NOT_CREATED(), $ttl, $entity->default);
+            return self::make(CacheStatus::NOT_CREATED, $ttl, $entity->default);
         }
 
         return $value;

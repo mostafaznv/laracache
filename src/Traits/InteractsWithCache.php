@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\DTOs\CacheData;
-use Mostafaznv\LaraCache\DTOs\CacheEvent;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Enums\CacheEvent;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 
+
 trait InteractsWithCache
 {
     private string $prefix;
-    private mixed $model;
+    private mixed  $model;
     private string $laracacheListKey;
 
     public function __construct(string $model)
@@ -49,22 +50,22 @@ trait InteractsWithCache
     private function entityIsCallable(CacheEntity $entity, ?CacheEvent $event = null): bool
     {
         return is_null($event)
-            or ($event->equals(CacheEvent::CREATED()) and $entity->refreshAfterCreate)
-            or ($event->equals(CacheEvent::UPDATED()) and $entity->refreshAfterUpdate)
-            or ($event->equals(CacheEvent::DELETED()) and $entity->refreshAfterDelete)
-            or ($event->equals(CacheEvent::RESTORED()) and $entity->refreshAfterRestore);
+            or ($event === CacheEvent::CREATED and $entity->refreshAfterCreate)
+            or ($event === CacheEvent::UPDATED and $entity->refreshAfterUpdate)
+            or ($event === CacheEvent::DELETED and $entity->refreshAfterDelete)
+            or ($event === CacheEvent::RESTORED and $entity->refreshAfterRestore);
     }
 
     private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
     {
         if ($delete) {
-            return CacheData::make(CacheStatus::DELETED(), $ttl, $entity->default);
+            return CacheData::make(CacheStatus::DELETED, $ttl, $entity->default);
         }
 
         $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
 
         return CacheData::make(
-            status: CacheStatus::CREATED(),
+            status: CacheStatus::CREATED,
             ttl: $ttl,
             value: $value ?: $entity->default
         );
@@ -108,11 +109,11 @@ trait InteractsWithCache
         $name = $this->getEntityFullName($entity);
         $cache = CacheData::fromCache($entity, $this->prefix, $ttl);
 
-        if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+        if ($cache->status === CacheStatus::NOT_CREATED) {
             $cache->value = $entity->default;
         }
 
-        $cache->status = CacheStatus::CREATING();
+        $cache->status = CacheStatus::CREATING;
 
         $this->putCacheIntoCacheStorage($cache, $entity->driver, $name, $ttl);
     }
@@ -162,11 +163,11 @@ trait InteractsWithCache
         $entity = $this->findCacheEntity($name);
         $cache = CacheData::fromCache($entity, $this->prefix);
 
-        if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+        if ($cache->status === CacheStatus::NOT_CREATED) {
             if ($entity->isQueueable) {
                 $this->initCache($entity, $entity->getTtl());
 
-                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED())
+                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED)
                     ->onConnection($entity->queueConnection)
                     ->onQueue($entity->queueName);
 

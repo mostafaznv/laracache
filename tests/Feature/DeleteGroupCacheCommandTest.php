@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 
@@ -21,9 +20,6 @@ beforeEach(function() {
         TestModel::query()->create($record);
         TestModel2::query()->create($record);
     }
-
-    $this->created = CacheStatus::CREATED();
-    $this->deleted = CacheStatus::DELETED();
 });
 
 

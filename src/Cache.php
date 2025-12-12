@@ -3,7 +3,7 @@
 namespace Mostafaznv\LaraCache;
 
 use Mostafaznv\LaraCache\DTOs\CacheData;
-use Mostafaznv\LaraCache\DTOs\CacheEvent;
+use Mostafaznv\LaraCache\Enums\CacheEvent;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Traits\InteractsWithCache;
 use Mostafaznv\LaraCache\Utils\RefreshDebouncer;

@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
 use Illuminate\Support\Facades\Queue;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Jobs\DebounceRefresh;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\DebounceTestModel;
@@ -25,12 +25,10 @@ it('will initiate cache object with CREATING status for the debounced entity', f
     createDebounceModel();
 
     $cache = DebounceTestModel::cache()->get('latest', true);
-    $created = $cache->status->equals(CacheStatus::CREATED());
-    expect($created)->toBeTrue();
+    expect($cache->status)->toBe(CacheStatus::CREATED);
 
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $creating = $cache->status->equals(CacheStatus::CREATING());
-    expect($creating)->toBeTrue();
+    expect($cache->status)->toBe(CacheStatus::CREATING);
 });
 
 it('will initiate cache object with entity default value', function () {
@@ -64,10 +62,9 @@ it('will create cache after debounce wait time is completed', function () {
 
     # before running queue
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $creating = $cache->status->equals(CacheStatus::CREATING());
 
-    expect($creating)
-        ->toBeTrue()
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATING)
         ->and($cache->value)
         ->toBe(-1);
 
@@ -81,10 +78,9 @@ it('will create cache after debounce wait time is completed', function () {
 
 
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $creating = $cache->status->equals(CacheStatus::CREATING());
 
-    expect($creating)
-        ->toBeTrue()
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATING)
         ->and($cache->value)
         ->toBe(-1);
 
@@ -97,10 +93,9 @@ it('will create cache after debounce wait time is completed', function () {
     Artisan::call('queue:work --once --sleep=0');
 
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $created = $cache->status->equals(CacheStatus::CREATED());
 
-    expect($created)
-        ->toBeTrue()
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATED)
         ->and($cache->value)
         ->tobeInstanceOf(DebounceTestModel::class);
 });
@@ -172,10 +167,9 @@ it('will return old cache until debounce process is done', function () {
     Artisan::call('queue:work --once --sleep=0');
 
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $creating = $cache->status->equals(CacheStatus::CREATING());
 
-    expect($creating)
-        ->toBeTrue()
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATING)
         ->and($cache->value->name)
         ->toBe('old-name');
 
@@ -201,10 +195,9 @@ it('will return cached result on retrieving normally', function () {
         ]);
 
     $cache = DebounceTestModel::cache()->get('latest.debounce', true);
-    $created = $cache->status->equals(CacheStatus::CREATED());
 
-    expect($created)
-        ->toBeTrue()
+    expect($cache->status)
+        ->toBe(CacheStatus::CREATED)
         ->and($cache->value)
         ->toBeInstanceOf(DebounceTestModel::class);
 });

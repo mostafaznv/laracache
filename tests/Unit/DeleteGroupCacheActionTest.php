@@ -1,11 +1,12 @@
 <?php
 
 use Mostafaznv\LaraCache\Actions\DeleteGroupCacheAction;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheGroupNotExist;
 use Mostafaznv\LaraCache\Exceptions\CacheGroupValueIsNotValid;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
+
 
 beforeEach(function() {
     $records = [
@@ -23,9 +24,6 @@ beforeEach(function() {
         TestModel::query()->create($record);
         TestModel2::query()->create($record);
     }
-
-    $this->created = CacheStatus::CREATED();
-    $this->deleted = CacheStatus::DELETED();
 });
 
 
@@ -104,12 +102,12 @@ it('will update all models and entities of the group', function() {
 
     foreach ($entities1 as $entity) {
         $cache = TestModel::cache()->get($entity, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
     }
 
     foreach ($entities2 as $entity) {
         $cache = TestModel2::cache()->get($entity, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
     }
 
     DeleteGroupCacheAction::make()->run('test-group');
@@ -117,11 +115,11 @@ it('will update all models and entities of the group', function() {
 
     foreach ($entities1 as $entity) {
         $cache = TestModel::cache()->get($entity, true);
-        expect($cache->status->equals($this->deleted))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::DELETED);
     }
 
     foreach ($entities2 as $entity) {
         $cache = TestModel2::cache()->get($entity, true);
-        expect($cache->status->equals($this->deleted))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::DELETED);
     }
 });

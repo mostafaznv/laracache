@@ -2,30 +2,31 @@
 
 namespace Mostafaznv\LaraCache\Observers;
 
-use Mostafaznv\LaraCache\DTOs\CacheEvent;
+use Mostafaznv\LaraCache\Enums\CacheEvent;
+
 
 final class LaraCacheObserver
 {
     public function created(mixed $model): void
     {
-        $model->cache()->refresh(CacheEvent::CREATED());
+        $model->cache()->refresh(CacheEvent::CREATED);
     }
 
     public function updated(mixed $model): void
     {
         if (!$this->isRestored($model)) {
-            $model->cache()->refresh(CacheEvent::UPDATED());
+            $model->cache()->refresh(CacheEvent::UPDATED);
         }
     }
 
     public function deleted(mixed $model): void
     {
-        $model->cache()->refresh(CacheEvent::DELETED());
+        $model->cache()->refresh(CacheEvent::DELETED);
     }
 
     public function restored(mixed $model): void
     {
-        $model->cache()->refresh(CacheEvent::RESTORED());
+        $model->cache()->refresh(CacheEvent::RESTORED);
     }
 
     private function isRestored(mixed $model): bool
