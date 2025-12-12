@@ -2,10 +2,15 @@
 
 if (!function_exists('week_ending_seconds')) {
     /**
-     * Calculate time to end of the week in seconds
+     * Compute the number of seconds remaining until the end of the week.
      *
-     * @param int $weeks
-     * @return int
+     * This function returns the number of seconds from the current time until the end
+     * of the week. The weekend day is determined by the `laracache.last-day-of-week`
+     * configuration value. An optional non-negative offset may be provided to calculate
+     * the seconds until the end of a future week.
+     *
+     * @param int $weeks Non-negative number of weeks to offset the calculation.
+     * @return int Seconds remaining until the end of the specified week.
      */
     function week_ending_seconds(int $weeks = 0): int
     {
@@ -21,10 +26,14 @@ if (!function_exists('week_ending_seconds')) {
 
 if (!function_exists('day_ending_seconds')) {
     /**
-     * Calculate time to end of the day in seconds
+     * Compute the number of seconds remaining until the end of the day.
      *
-     * @param int $days
-     * @return int
+     * This function returns the number of seconds from the current time until the end
+     * of the day. An optional non-negative offset may be provided to calculate the
+     * seconds until the end of a future day.
+     *
+     * @param int $days Non-negative number of days to offset the calculation.
+     * @return int Seconds remaining until the end of the specified day.
      */
     function day_ending_seconds(int $days = 0): int
     {
