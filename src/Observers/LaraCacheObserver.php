@@ -2,34 +2,52 @@
 
 namespace Mostafaznv\LaraCache\Observers;
 
+use Illuminate\Database\Eloquent\Model;
 use Mostafaznv\LaraCache\Enums\CacheEvent;
+use Mostafaznv\LaraCache\Traits\LaraCache;
 
 
 final class LaraCacheObserver
 {
-    public function created(mixed $model): void
+    /**
+     * @param Model&LaraCache $model
+     */
+    public function created(Model $model): void
     {
         $model->cache()->refresh(CacheEvent::CREATED);
     }
 
-    public function updated(mixed $model): void
+    /**
+     * @param Model&LaraCache $model
+     */
+    public function updated(Model $model): void
     {
         if (!$this->isRestored($model)) {
             $model->cache()->refresh(CacheEvent::UPDATED);
         }
     }
 
-    public function deleted(mixed $model): void
+    /**
+     * @param Model&LaraCache $model
+     */
+    public function deleted(Model $model): void
     {
         $model->cache()->refresh(CacheEvent::DELETED);
     }
 
-    public function restored(mixed $model): void
+    /**
+     * @param Model&LaraCache $model
+     */
+    public function restored(Model $model): void
     {
         $model->cache()->refresh(CacheEvent::RESTORED);
     }
 
-    private function isRestored(mixed $model): bool
+
+    /**
+     * @param Model&LaraCache $model
+     */
+    private function isRestored(Model $model): bool
     {
         return $model->wasChanged('deleted_at')
             and is_null($model->deleted_at)
