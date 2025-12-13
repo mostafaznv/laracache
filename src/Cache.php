@@ -8,6 +8,7 @@ use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Traits\InteractsWithCache;
 use Mostafaznv\LaraCache\Utils\RefreshDebouncer;
 
+
 class Cache
 {
     use InteractsWithCache;

@@ -15,9 +15,9 @@ class DebounceRefresh implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public string     $key,
-        public string     $token,
-        public string     $model,
+        public string $key,
+        public string $token,
+        public string $model,
         public string $name,
     ) {}
 
