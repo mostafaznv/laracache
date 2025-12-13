@@ -19,7 +19,7 @@ class CacheData
 
     public static function make(CacheStatus $status, int $ttl, mixed $value): self
     {
-        $expiration = $ttl ? Carbon::now()->addSeconds($ttl)->unix() : null;
+        $expiration = $ttl > 0 ? Carbon::now()->addSeconds($ttl)->unix() : null;
 
         return new static($status, $expiration, $value);
     }
