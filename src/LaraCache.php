@@ -18,7 +18,7 @@ class LaraCache
     /**
      * @param class-string|null $model
      */
-    public function updateAll(string $model = null): void
+    public function updateAll(?string $model = null): void
     {
         if ($model) {
             $model::cache()->updateAll();
@@ -44,7 +44,7 @@ class LaraCache
     /**
      * @param class-string|null $model
      */
-    public function deleteAll(string $model = null, bool $forever = false): void
+    public function deleteAll(?string $model = null, bool $forever = false): void
     {
         if ($model) {
             $model::cache()->deleteAll($forever);
