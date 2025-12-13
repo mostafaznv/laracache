@@ -5,6 +5,7 @@ namespace Mostafaznv\LaraCache\DTOs;
 use Mostafaznv\LaraCache\Exceptions\EntityIsNotAllowed;
 use Mostafaznv\LaraCache\Exceptions\ModelDoesntUseLaraCacheTrait;
 use Mostafaznv\LaraCache\Exceptions\ModelDoestNotExist;
+use Mostafaznv\LaraCache\Exceptions\ModelOptionIsRequired;
 use Mostafaznv\LaraCache\Traits\LaraCache;
 
 
@@ -21,7 +22,14 @@ class CommandData
 
     public static function make(array $models, array $entities = []): self
     {
-        if (count($models) > 1 and count($entities)) {
+        $modelsCount = count($models);
+
+        if ($modelsCount === 0) {
+            throw ModelOptionIsRequired::make();
+        }
+
+
+        if ($modelsCount > 1 and count($entities)) {
             throw EntityIsNotAllowed::make();
         }
 
