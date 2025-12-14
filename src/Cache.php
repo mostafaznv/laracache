@@ -71,11 +71,13 @@ class Cache
                     );
                 }
                 else if ($entity->isQueueable) {
-                    $this->initCache($entity, $entity->getTtl());
+                    if ($this->entityIsCallable($entity, $event)) {
+                        $this->initCache($entity, $entity->getTtl());
 
-                    RefreshCache::dispatch($this->model, $entity->name, $event)
-                        ->onConnection($entity->queueConnection)
-                        ->onQueue($entity->queueName);
+                        RefreshCache::dispatch($this->model, $entity->name)
+                            ->onConnection($entity->queueConnection)
+                            ->onQueue($entity->queueName);
+                    }
                 }
                 else {
                     $this->updateCacheEntity($entity->name, $event, $entity);

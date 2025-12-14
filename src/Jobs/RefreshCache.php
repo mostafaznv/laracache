@@ -7,7 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Mostafaznv\LaraCache\Enums\CacheEvent;
 
 
 class RefreshCache implements ShouldQueue
@@ -15,9 +14,8 @@ class RefreshCache implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        private string     $model,
-        private string     $name,
-        private CacheEvent $event,
+        private readonly string $model,
+        private readonly string $name,
     ) {}
 
 
@@ -25,6 +23,6 @@ class RefreshCache implements ShouldQueue
     {
         $model = app($this->model);
 
-        $model->cache()->update($this->name, $this->event);
+        $model->cache()->update($this->name);
     }
 }

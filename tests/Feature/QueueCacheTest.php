@@ -3,11 +3,13 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel;
 use Illuminate\Support\Facades\DB;
+use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\QueueTestModel2;
 
 
 beforeEach(function () {
@@ -51,7 +53,7 @@ it('will create cache after processing queue', function () {
     $before = now();
 
     $model = createQueueModel();
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest', true);
     $after = now();
@@ -105,7 +107,7 @@ it('will create cache in background on retrieving entity', function () {
         ->and($cache->value)
         ->toBe(-1);
 
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest', true);
     $after = now();
@@ -126,7 +128,7 @@ it('will change cache status to creating on model update', function () {
     $cache = QueueTestModel::cache()->get('latest', true);
     expect($cache->status)->toBe(CacheStatus::CREATING);
 
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest', true);
     expect($cache->status)->toBe(CacheStatus::CREATED);
@@ -137,7 +139,7 @@ it('will change cache status to creating on model update', function () {
     $cache = QueueTestModel::cache()->get('latest', true);
     expect($cache->status)->toBe(CacheStatus::CREATING);
 
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest', true);
     expect($cache->status)
@@ -152,7 +154,7 @@ it('will return old cache until queue process of updating model is done', functi
     $cache = QueueTestModel::cache()->get('latest');
     expect($cache)->toBe(-1);
 
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest');
     expect($cache->name)->toBe('old-name');
@@ -163,8 +165,55 @@ it('will return old cache until queue process of updating model is done', functi
     $cache = QueueTestModel::cache()->get('latest');
     expect($cache->name)->toBe('old-name');
 
-    Artisan::call('queue:work --once');
+    Artisan::call('queue:work --once --sleep=0');
 
     $cache = QueueTestModel::cache()->get('latest');
     expect($cache->name)->toBe('new-name');
+});
+
+it('will respect cache creation rules during queue tasks', function () {
+    # prepare
+    $worksOnCreation = 'queue-test-model.latest';
+    $doesNotWorkOnCreation = 'queue-test-model2.latest';
+
+
+    # test 1 - will work on creation
+    createQueueModel();
+    Artisan::call('queue:work --sleep=0 --once');
+
+    $latest = Cache::get($worksOnCreation);
+    expect($latest)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($latest->status)
+        ->toBe(CacheStatus::CREATED);
+
+
+    # test 2 - will not work on creation
+    createQueueModel2();
+    Artisan::call('queue:work --sleep=0 --once');
+
+    $latest = Cache::get($doesNotWorkOnCreation);
+    expect($latest)->toBeNull();
+
+
+    # test 3 - will work on retrieve
+    $cache = QueueTestModel2::cache()->get('latest', true);
+
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATING)
+        ->and($cache->value)
+        ->toBe(-1);
+
+    Artisan::call('queue:work --sleep=0 --once');
+
+    $cache = QueueTestModel2::cache()->get('latest', true);
+
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATED)
+        ->and($cache->value)
+        ->toBeInstanceOf(QueueTestModel2::class);
 });

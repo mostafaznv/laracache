@@ -58,7 +58,7 @@ trait InteractsWithCache
             CacheEvent::UPDATED   => $entity->refreshAfterUpdate,
             CacheEvent::DELETED   => $entity->refreshAfterDelete,
             CacheEvent::RESTORED  => $entity->refreshAfterRestore,
-            CacheEvent::RETRIEVED => false,
+            CacheEvent::RETRIEVED => true,
         };
     }
 
@@ -173,7 +173,7 @@ trait InteractsWithCache
             if ($entity->isQueueable) {
                 $this->initCache($entity, $entity->getTtl());
 
-                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED)
+                RefreshCache::dispatch($this->model, $entity->name)
                     ->onConnection($entity->queueConnection)
                     ->onQueue($entity->queueName);
 
