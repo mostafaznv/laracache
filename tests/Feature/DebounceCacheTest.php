@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Mostafaznv\LaraCache\DTOs\CacheData;
 use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Jobs\DebounceRefresh;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
@@ -200,4 +201,70 @@ it('will return cached result on retrieving normally', function () {
         ->toBe(CacheStatus::CREATED)
         ->and($cache->value)
         ->toBeInstanceOf(DebounceTestModel::class);
+});
+
+it('will respect cache creation rules', function () {
+    # prepare
+    $worksOnCreation = 'debounce-test-model.latest.debounce';
+    $doesNotWorkOnCreation = 'debounce-test-model.latest.no-creation';
+
+    createDebounceModel();
+
+
+    # test 1 - after creation, before running the queue
+    $cache = Cache::get($worksOnCreation);
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATING);
+
+    $cache = Cache::get($doesNotWorkOnCreation);
+    expect($cache)->toBeNull();
+
+
+    # waiting for debouncing
+    testTime()->freeze(
+        now()->addSeconds($this->waitTime - 1)
+    );
+
+    Artisan::call('queue:work --once --sleep=0');
+
+
+
+    # test 2 - after running the queue; before debouncing time is over
+    $cache = Cache::get($worksOnCreation);
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATING);
+
+    $cache = Cache::get($doesNotWorkOnCreation);
+    expect($cache)->toBeNull();
+
+
+
+    # waiting for debouncing
+    testTime()->freeze(
+        now()->addSeconds($this->waitTime + 1)
+    );
+
+
+    # test 3 - after debouncing time is over
+    Artisan::call('queue:work --once --sleep=0');
+
+    $cache = Cache::get($worksOnCreation);
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATED);
+
+    $cache = Cache::get($doesNotWorkOnCreation);
+    expect($cache)->toBeNull();
+
+    $cache = DebounceTestModel::cache()->get('latest.no-creation', true);
+    expect($cache)
+        ->toBeInstanceOf(CacheData::class)
+        ->and($cache->status)
+        ->toBe(CacheStatus::CREATED);
+
 });

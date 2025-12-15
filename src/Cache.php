@@ -60,15 +60,17 @@ class Cache
 
             foreach ($this->model::cacheEntities() as $entity) {
                 if ($entity->debounce) {
-                    $this->initCache($entity, $entity->getTtl());
+                    if ($this->entityIsCallable($entity, $event)) {
+                        $this->initCache($entity, $entity->getTtl());
 
-                    RefreshDebouncer::dispatch(
-                        model: $this->model,
-                        name: $entity->name,
-                        queueConnection: $entity->queueConnection,
-                        queueName: $entity->queueName,
-                        wait: $entity->debounceWaitTime
-                    );
+                        RefreshDebouncer::dispatch(
+                            model: $this->model,
+                            name: $entity->name,
+                            queueConnection: $entity->queueConnection,
+                            queueName: $entity->queueName,
+                            wait: $entity->debounceWaitTime
+                        );
+                    }
                 }
                 else if ($entity->isQueueable) {
                     if ($this->entityIsCallable($entity, $event)) {
