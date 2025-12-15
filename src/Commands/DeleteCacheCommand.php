@@ -7,10 +7,12 @@ use Mostafaznv\LaraCache\Actions\DeleteCacheAction;
 use Mostafaznv\LaraCache\DTOs\CommandData;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
+
 class DeleteCacheCommand extends Command
 {
-    protected $signature = 'laracache:delete {--m|model=*} {--e|entity=*}';
+    protected $signature   = 'laracache:delete {--m|model=*} {--e|entity=*}';
     protected $description = 'Deletes one or multiple cache entities in a single model';
+
 
     public function handle(): int
     {

@@ -3,14 +3,16 @@
 namespace Mostafaznv\LaraCache;
 
 use Mostafaznv\LaraCache\DTOs\CacheData;
-use Mostafaznv\LaraCache\DTOs\CacheEvent;
+use Mostafaznv\LaraCache\Enums\CacheEvent;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Traits\InteractsWithCache;
 use Mostafaznv\LaraCache\Utils\RefreshDebouncer;
 
+
 class Cache
 {
     use InteractsWithCache;
+
 
     public function get(string $name, bool $withCacheData = false): mixed
     {
@@ -35,10 +37,7 @@ class Cache
         $this->updateLaraCacheModelsList();
 
         foreach ($this->model::cacheEntities() as $entity) {
-            $this->updateCacheEntity(
-                name: $entity->name,
-                entity: $entity
-            );
+            $this->updateCacheEntity($entity->name, entity: $entity);
         }
     }
 
@@ -61,22 +60,26 @@ class Cache
 
             foreach ($this->model::cacheEntities() as $entity) {
                 if ($entity->debounce) {
-                    $this->initCache($entity, $entity->getTtl());
+                    if ($this->entityIsCallable($entity, $event)) {
+                        $this->initCache($entity, $entity->getTtl());
 
-                    RefreshDebouncer::dispatch(
-                        model: $this->model,
-                        name: $entity->name,
-                        queueConnection: $entity->queueConnection,
-                        queueName: $entity->queueName,
-                        wait: $entity->debounceWaitTime
-                    );
+                        RefreshDebouncer::dispatch(
+                            model: $this->model,
+                            name: $entity->name,
+                            queueConnection: $entity->queueConnection,
+                            queueName: $entity->queueName,
+                            wait: $entity->debounceWaitTime
+                        );
+                    }
                 }
                 else if ($entity->isQueueable) {
-                    $this->initCache($entity, $entity->getTtl());
+                    if ($this->entityIsCallable($entity, $event)) {
+                        $this->initCache($entity, $entity->getTtl());
 
-                    RefreshCache::dispatch($this->model, $entity->name, $event)
-                        ->onConnection($entity->queueConnection)
-                        ->onQueue($entity->queueName);
+                        RefreshCache::dispatch($this->model, $entity->name)
+                            ->onConnection($entity->queueConnection)
+                            ->onQueue($entity->queueName);
+                    }
                 }
                 else {
                     $this->updateCacheEntity($entity->name, $event, $entity);

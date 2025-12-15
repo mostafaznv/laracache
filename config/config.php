@@ -6,10 +6,9 @@ return [
     | Cache Driver
     |--------------------------------------------------------------------------
     |
-    | The default mechanism for handling cache storage.
-    |
-    | If you keep this option null, LaraCache will use the default cache
-    | storage from config/cache.php
+    | Defines the cache driver to be used by LaraCache.
+    | If set to null, LaraCache will fall back to the application's default
+    | cache store configured in `config/cache.php`.
     |
     */
 
@@ -20,8 +19,9 @@ return [
     | Cache List Key
     |--------------------------------------------------------------------------
     |
-    | LaraCache uses a separate list to store name of all entities. using these
-    | keys, we can perform some actions to all entities (such as update or delete them)
+    | Key used by LaraCache to maintain a registry of entity names. This list
+    | enables operations across all registered entities (for example, bulk
+    | updates or deletions).
     |
     */
 
@@ -32,8 +32,8 @@ return [
     | First Day of Week
     |--------------------------------------------------------------------------
     |
-    | In some regions, saturday is first day of the week and in another regions
-    | it may be different
+    | Specifies the first day of the week. This value may vary by region.
+    | Uses a Carbon constant for clarity and consistency.
     |
     */
 
@@ -44,8 +44,8 @@ return [
     | Last Day of Week
     |--------------------------------------------------------------------------
     |
-    | In some regions, friday is last day of the week and in another regions
-    | it may be different
+    | Specifies the last day of the week. Adjust this value to match your
+    | regional or business conventions.
     |
     */
 
@@ -56,7 +56,8 @@ return [
     | Queue
     |--------------------------------------------------------------------------
     |
-    | Sometimes caching process is very heavy, so you have to queue the process and do it in background.
+    | Configuration for background processing. Use queues to offload heavy or
+    | long-running cache operations. Set `status` to true to enable queuing.
     |
     */
 
@@ -71,7 +72,9 @@ return [
     | Debounce
     |--------------------------------------------------------------------------
     |
-    | If you want to debounce the cache refresh process, you can enable this option.
+    | Debounce settings control deferred refresh behavior to prevent frequent
+    | or redundant cache refreshes. `wait` is specified in seconds. Debounce
+    | can be processed via a dedicated queue configuration below.
     |
     */
 
@@ -90,9 +93,9 @@ return [
     | Groups
     |--------------------------------------------------------------------------
     |
-    | You can group some entities and perform some actions on them.
+    | Define logical groups of entities to perform collective operations.
+    | Example structure:
     |
-    | Example:
     | 'groups' => [
     |    'group-1' => [
     |        [

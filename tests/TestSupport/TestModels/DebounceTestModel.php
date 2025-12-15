@@ -31,6 +31,16 @@ class DebounceTestModel extends Model
                 ->setDefault(-1)
                 ->cache(function() {
                     return DebounceTestModel::query()->latest()->first();
+                }),
+
+            CacheEntity::make('latest.no-creation')
+                ->validForRestOfDay()
+                ->debounce()
+                ->refreshAfterCreate(false)
+                ->refreshAfterUpdate(false)
+                ->setDefault(-1)
+                ->cache(function() {
+                    return DebounceTestModel::query()->latest()->first();
                 })
         ];
     }

@@ -4,24 +4,33 @@ use Mostafaznv\LaraCache\DTOs\CommandData;
 use Mostafaznv\LaraCache\Exceptions\EntityIsNotAllowed;
 use Mostafaznv\LaraCache\Exceptions\ModelDoesntUseLaraCacheTrait;
 use Mostafaznv\LaraCache\Exceptions\ModelDoestNotExist;
+use Mostafaznv\LaraCache\Exceptions\ModelOptionIsRequired;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestUser;
 
 
-it('will throw an exception if we passed some entities with more than one model to the DTO', function() {
+it('will throw ModelOptionIsRequired when no models are provided', function () {
+    CommandData::make([], ['latest']);
+
+})->throws(ModelOptionIsRequired::class);
+
+it('throws EntityIsNotAllowed when entities are provided with multiple models', function () {
     CommandData::make(['Article', 'Product'], ['latest']);
+
 })->throws(EntityIsNotAllowed::class);
 
-it('will throw an exception if model does not exist', function() {
+it('throws ModelDoestNotExist when the specified model cannot be resolved', function () {
     CommandData::make(['Article']);
+
 })->throws(ModelDoestNotExist::class);
 
-it('will throw an exception if model does not use LaraCache trait', function() {
+it('throws ModelDoesntUseLaraCacheTrait when the model does not use the LaraCache trait', function () {
     CommandData::make([TestUser::class]);
+
 })->throws(ModelDoesntUseLaraCacheTrait::class);
 
-it('will assign existing models to models property', function() {
+it('populates the models property with validated model class names', function () {
     $data = CommandData::make([TestModel::class, TestModel2::class]);
 
     expect($data->models)
@@ -32,7 +41,7 @@ it('will assign existing models to models property', function() {
         ]);
 });
 
-it('will assign entities to entities property', function() {
+it('populates the entities property with the provided entities', function () {
     $entities = ['latest', 'featured', 'popular'];
     $data = CommandData::make([TestModel::class], $entities);
 

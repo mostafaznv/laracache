@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\DTOs\CacheData;
-use Mostafaznv\LaraCache\DTOs\CacheEvent;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Enums\CacheEvent;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Exceptions\CacheEntityDoesNotExist;
 use Mostafaznv\LaraCache\Jobs\RefreshCache;
 use Mostafaznv\LaraCache\Jobs\UpdateLaraCacheModelsList;
 
+
 trait InteractsWithCache
 {
     private string $prefix;
-    private mixed $model;
+    private mixed  $model;
     private string $laracacheListKey;
 
     public function __construct(string $model)
@@ -48,23 +49,29 @@ trait InteractsWithCache
 
     private function entityIsCallable(CacheEntity $entity, ?CacheEvent $event = null): bool
     {
-        return is_null($event)
-            or ($event->equals(CacheEvent::CREATED()) and $entity->refreshAfterCreate)
-            or ($event->equals(CacheEvent::UPDATED()) and $entity->refreshAfterUpdate)
-            or ($event->equals(CacheEvent::DELETED()) and $entity->refreshAfterDelete)
-            or ($event->equals(CacheEvent::RESTORED()) and $entity->refreshAfterRestore);
+        if ($event === null) {
+            return true;
+        }
+
+        return match ($event) {
+            CacheEvent::CREATED   => $entity->refreshAfterCreate,
+            CacheEvent::UPDATED   => $entity->refreshAfterUpdate,
+            CacheEvent::DELETED   => $entity->refreshAfterDelete,
+            CacheEvent::RESTORED  => $entity->refreshAfterRestore,
+            CacheEvent::RETRIEVED => true,
+        };
     }
 
     private function callCacheClosure(CacheEntity $entity, int $ttl, bool $delete = false): CacheData
     {
         if ($delete) {
-            return CacheData::make(CacheStatus::DELETED(), $ttl, $entity->default);
+            return CacheData::make(CacheStatus::DELETED, $ttl, $entity->default);
         }
 
-        $value = $entity->cacheClosure ? call_user_func($entity->cacheClosure) : null;
+        $value = $entity->cacheClosure ? ($entity->cacheClosure)() : $entity->default;
 
         return CacheData::make(
-            status: CacheStatus::CREATED(),
+            status: CacheStatus::CREATED,
             ttl: $ttl,
             value: $value ?: $entity->default
         );
@@ -96,7 +103,7 @@ trait InteractsWithCache
 
     private function putCacheIntoCacheStorage(CacheData $cache, string $driver, string $name, int $ttl): bool
     {
-        if (is_null($cache->expiration)) {
+        if ($cache->expiration === null) {
             return Cache::store($driver)->forever($name, $cache);
         }
 
@@ -108,11 +115,11 @@ trait InteractsWithCache
         $name = $this->getEntityFullName($entity);
         $cache = CacheData::fromCache($entity, $this->prefix, $ttl);
 
-        if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+        if ($cache->status === CacheStatus::NOT_CREATED) {
             $cache->value = $entity->default;
         }
 
-        $cache->status = CacheStatus::CREATING();
+        $cache->status = CacheStatus::CREATING;
 
         $this->putCacheIntoCacheStorage($cache, $entity->driver, $name, $ttl);
     }
@@ -150,7 +157,7 @@ trait InteractsWithCache
     private function deleteCacheEntity(string $name, bool $deleteForever = false, ?CacheEntity $entity = null): CacheData
     {
         $entity = $this->findCacheEntity($name, $entity);
-        $ttl = !$deleteForever ? $entity->getTtl() : 0;
+        $ttl = $deleteForever ? 0 : $entity->getTtl();
         $cache = $this->callCacheClosure($entity, $ttl, true);
         $this->storeCache($cache, $entity, $ttl);
 
@@ -162,11 +169,11 @@ trait InteractsWithCache
         $entity = $this->findCacheEntity($name);
         $cache = CacheData::fromCache($entity, $this->prefix);
 
-        if ($cache->status->equals(CacheStatus::NOT_CREATED())) {
+        if ($cache->status === CacheStatus::NOT_CREATED) {
             if ($entity->isQueueable) {
                 $this->initCache($entity, $entity->getTtl());
 
-                RefreshCache::dispatch($this->model, $entity->name, CacheEvent::RETRIEVED())
+                RefreshCache::dispatch($this->model, $entity->name)
                     ->onConnection($entity->queueConnection)
                     ->onQueue($entity->queueName);
 

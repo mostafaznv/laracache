@@ -4,29 +4,21 @@ namespace Mostafaznv\LaraCache;
 
 use Illuminate\Support\Facades\Cache;
 
+
 class LaraCache
 {
     /**
-     * Update Cache Entity
-     *
-     * @param mixed $model
-     * @param string $name
-     * @param string $event
-     * @param CacheEntity|null $entity
-     *
-     * @return mixed
+     * @param class-string $model
      */
-    public function update(mixed $model, string $name, string $event = '', ?CacheEntity $entity = null): mixed
+    public function update(string $model, string $name): mixed
     {
-        return $model::cache()->update($name, $event, $entity);
+        return $model::cache()->update($name);
     }
 
     /**
-     * Update All Cache Entities
-     *
-     * @param mixed $model
+     * @param class-string|null $model
      */
-    public function updateAll(mixed $model = null): void
+    public function updateAll(?string $model = null): void
     {
         if ($model) {
             $model::cache()->updateAll();
@@ -34,7 +26,7 @@ class LaraCache
         else {
             $list = self::list();
 
-            /** @var mixed $model */
+            /** @var class-string $model */
             foreach ($list as $model => $entities) {
                 $model::cache()->updateAll();
             }
@@ -42,25 +34,17 @@ class LaraCache
     }
 
     /**
-     * Delete Cache Entity
-     *
-     * @param mixed $model
-     * @param string $name
-     * @param bool $forever
-     * @return mixed
+     * @param class-string $model
      */
-    public function delete(mixed $model, string $name, bool $forever = false): mixed
+    public function delete(string $model, string $name, bool $forever = false): mixed
     {
         return $model::cache()->delete($name, $forever);
     }
 
     /**
-     * Delete All Cache Entities
-     *
-     * @param mixed $model
-     * @param bool $forever
+     * @param class-string|null $model
      */
-    public function deleteAll(mixed $model = null, bool $forever = false): void
+    public function deleteAll(?string $model = null, bool $forever = false): void
     {
         if ($model) {
             $model::cache()->deleteAll($forever);
@@ -68,7 +52,7 @@ class LaraCache
         else {
             $list = self::list();
 
-            /** @var mixed $model */
+            /** @var class-string $model */
             foreach ($list as $model => $entities) {
                 $model::cache()->deleteAll($forever);
             }
@@ -76,43 +60,29 @@ class LaraCache
     }
 
     /**
-     * Retrieve Cache
-     *
-     * @param mixed $model
-     * @param string $name
-     * @param bool $withCacheData
-     * @return mixed
+     * @param class-string $model
      */
-    public function retrieve(mixed $model, string $name, bool $withCacheData = false): mixed
+    public function retrieve(string $model, string $name, bool $withCacheData = false): mixed
     {
         return $model::cache()->get($name, $withCacheData);
     }
 
     /**
-     * Disable refresh cache on all events
-     *
-     * @param $model
+     * @param class-string $model
      */
-    public function disable($model): void
+    public function disable(string $model): void
     {
         $model::cache()->disable();
     }
 
     /**
-     * Enable refresh cache on all events
-     *
-     * @param $model
+     * @param class-string $model
      */
-    public function enable($model): void
+    public function enable(string $model): void
     {
         $model::cache()->enable();
     }
 
-    /**
-     * Retrieve List of All Cache Entities
-     *
-     * @return array
-     */
     public function list(): array
     {
         $laracacheListKey = config('laracache.laracache-list');

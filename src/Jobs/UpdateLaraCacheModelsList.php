@@ -9,16 +9,18 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 
+
 class UpdateLaraCacheModelsList implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public const string LARACACHE_MODELS_LIST = 'laracache.models';
+
     private string $driver;
     private string $key;
 
-    public const LARACACHE_MODELS_LIST = 'laracache.models';
 
-    public function __construct(private string $model)
+    public function __construct(private readonly string $model)
     {
         $this->driver = config('laracache.driver') ?: config('cache.default');
         $this->key = self::LARACACHE_MODELS_LIST;
@@ -34,7 +36,7 @@ class UpdateLaraCacheModelsList implements ShouldQueue
         $list[] = $this->model;
 
         Cache::driver($this->driver)->forever(
-            key: 'laracache.models',
+            key: $this->key,
             value: array_unique($list)
         );
     }

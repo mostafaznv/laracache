@@ -4,6 +4,8 @@ namespace Mostafaznv\LaraCache\Actions;
 
 use Mostafaznv\LaraCache\Actions\Support\UpdateDeleteCache;
 use Mostafaznv\LaraCache\DTOs\CommandData;
+use Mostafaznv\LaraCache\Traits\LaraCache;
+
 
 class UpdateCacheAction extends UpdateDeleteCache
 {
@@ -24,7 +26,7 @@ class UpdateCacheAction extends UpdateDeleteCache
     }
 
     /**
-     * @param \Mostafaznv\LaraCache\Traits\LaraCache $model
+     * @param LaraCache $model
      * @return void
      */
     private function updateAll(string $model): void
@@ -39,7 +41,7 @@ class UpdateCacheAction extends UpdateDeleteCache
     }
 
     /**
-     * @param \Mostafaznv\LaraCache\Traits\LaraCache $model
+     * @param LaraCache $model
      * @param array $entities
      * @return void
      */

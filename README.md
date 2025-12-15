@@ -32,9 +32,16 @@ Therefore, if you decide to use my packages, please kindly consider making a don
 
 ## Requirements:
 
-- PHP 8.0.2 or higher
-- Laravel 8.40.0 or higher
+- PHP 8.3 or higher
+- Laravel 12 or higher
 
+
+To install LaraCache on older Laravel/PHP versions, consult the compatibility table below to determine which LaraCache release to use:
+
+| Laravel Version | PHP Version   | LaraCache Version                                           |
+|-----------------|---------------|-------------------------------------------------------------|
+| 8.40.0 — 12.x   | 8.0.2 — 8.5   | [2.5.2](https://github.com/mostafaznv/laracache/tree/2.5.2) |
+| 12.x            | 8.3 or higher | master (3.x)                                                |
 
 ## Installation
 

@@ -2,10 +2,10 @@
 
 namespace Mostafaznv\LaraCache\Traits;
 
-use Exception;
 use Mostafaznv\LaraCache\Cache;
 use Mostafaznv\LaraCache\CacheEntity;
 use Mostafaznv\LaraCache\Observers\LaraCacheObserver;
+
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
@@ -14,22 +14,12 @@ trait LaraCache
 {
     public static bool $isEnabled = true;
 
-    /**
-     * Boot LaraCache
-     *
-     * @throws Exception
-     */
-    public static function bootLaraCache()
+
+    public static function bootLaraCache(): void
     {
         self::observe(LaraCacheObserver::class);
     }
 
-    /**
-     * Get the entities should store in cache
-     *
-     * @return CacheEntity[]
-     */
-    abstract static public function cacheEntities(): array;
 
     public static function cache(): Cache
     {
@@ -40,4 +30,12 @@ trait LaraCache
     {
         return new Cache(self::class);
     }
+
+
+    /**
+     * Get the entities should store in cache
+     *
+     * @return CacheEntity[]
+     */
+    abstract static public function cacheEntities(): array;
 }

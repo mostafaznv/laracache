@@ -8,6 +8,7 @@ use Mostafaznv\LaraCache\DTOs\CommandData;
 use Mostafaznv\LaraCache\Exceptions\CacheGroupNotExist;
 use Mostafaznv\LaraCache\Exceptions\CacheGroupValueIsNotValid;
 
+
 abstract class UpdateDeleteCache
 {
     public function __construct(protected ?Command $console) {}

@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
-use Mostafaznv\LaraCache\DTOs\CacheStatus;
+use Mostafaznv\LaraCache\Enums\CacheStatus;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel;
 use Mostafaznv\LaraCache\Tests\TestSupport\TestModels\TestModel2;
+
 
 beforeEach(function() {
     $records = [
@@ -21,9 +22,6 @@ beforeEach(function() {
         TestModel::query()->create($record);
         TestModel2::query()->create($record);
     }
-
-    $this->created = CacheStatus::CREATED();
-    $this->deleted = CacheStatus::DELETED();
 });
 
 
@@ -34,10 +32,10 @@ it('will delete all entities of all models if multiple models sent to the action
 
     foreach ($names as $name) {
         $cache = TestModel::cache()->get($name, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
 
         $cache = TestModel2::cache()->get($name, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
     }
 
     Artisan::call('laracache:delete', [
@@ -48,10 +46,10 @@ it('will delete all entities of all models if multiple models sent to the action
 
     foreach ($names as $name) {
         $cache = TestModel::cache()->get($name, true);
-        expect($cache->status->equals($this->deleted))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::DELETED);
 
         $cache = TestModel2::cache()->get($name, true);
-        expect($cache->status->equals($this->deleted))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::DELETED);
     }
 });
 
@@ -62,7 +60,7 @@ it('will delete all entities of passed model if entities argument is empty', fun
 
     foreach ($names as $name) {
         $cache = TestModel::cache()->get($name, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
     }
 
     Artisan::call('laracache:delete', [
@@ -73,7 +71,7 @@ it('will delete all entities of passed model if entities argument is empty', fun
 
     foreach ($names as $name) {
         $cache = TestModel::cache()->get($name, true);
-        expect($cache->status->equals($this->deleted))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::DELETED);
     }
 });
 
@@ -83,7 +81,7 @@ it('will delete only specified entities if one model is sent to the action', fun
     ];
 
     $cache = TestModel::cache()->get('list.day', true);
-    expect($cache->status->equals($this->created))->toBeTrue();
+    expect($cache->status)->toBe(CacheStatus::CREATED);
 
     Artisan::call('laracache:delete', [
         '--model'  => [
@@ -96,11 +94,11 @@ it('will delete only specified entities if one model is sent to the action', fun
 
     foreach ($names as $name) {
         $cache = TestModel::cache()->get($name, true);
-        expect($cache->status->equals($this->created))->toBeTrue();
+        expect($cache->status)->toBe(CacheStatus::CREATED);
     }
 
     $cache = TestModel::cache()->get('list.day', true);
-    expect($cache->status->equals($this->deleted))->toBeTrue();
+    expect($cache->status)->toBe(CacheStatus::DELETED);
 });
 
 it('will print the name of deleted cache entities in the console', function() {
