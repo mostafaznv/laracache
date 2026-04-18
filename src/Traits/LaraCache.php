@@ -17,7 +17,9 @@ trait LaraCache
 
     public static function bootLaraCache(): void
     {
-        self::observe(LaraCacheObserver::class);
+        static::whenBooted(function () {
+            self::observe(LaraCacheObserver::class);
+        });
     }
 
 
