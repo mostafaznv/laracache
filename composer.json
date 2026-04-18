@@ -27,10 +27,10 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.3",
-        "laravel/framework": "^12.0"
+        "laravel/framework": "^12.0|^13.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.0",
+        "orchestra/testbench": "^10.0|^11.0",
         "pestphp/pest": "^3.7|^4.1",
         "spatie/pest-plugin-test-time": "^2.1"
     },
